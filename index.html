@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>بادل برو — دخول</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/css/intlTelInput.css">
+  <style>
+    :root {
+      --primary: #1D9E75; --primary-light: #E1F5EE; --primary-dark: #0F6E56;
+      --bg-dark: #0F172A; --surface: rgba(255, 255, 255, 0.08);
+      --glass-border: rgba(255, 255, 255, 0.15);
+      --text-white: #FFFFFF; --text-muted: rgba(255, 255, 255, 0.6);
+      --radius: 32px; --transition: 0.3s cubic-bezier(.4, 0, .2, 1);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Tajawal', sans-serif; min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      background: #000; direction: rtl; overflow-x: hidden; overflow-y: auto;
+    }
+    html[dir="ltr"] body { direction: ltr; }
+    /* ═══ Background with Overlay ═══ */
+    .login-bg {
+      position: fixed; inset: 0; z-index: -1;
+      background: url('assets/login_bg.png') center/cover no-repeat, linear-gradient(135deg, #0A2E1F, #0F6E56);
+      filter: brightness(0.65); transform: scale(1.05);
+    }
+    .login-overlay {
+      position: fixed; inset: 0; z-index: -1;
+      background: linear-gradient(to bottom, rgba(15, 23, 42, 0.3), rgba(15, 23, 42, 0.85));
+    }
+    .container {
+      width: 100%; max-width: 420px; padding: 16px; position: relative; z-index: 10;
+    }
+    @media (min-width: 480px) { .container { padding: 24px; } }
+    @supports (padding: env(safe-area-inset-bottom)) {
+      .container { padding-bottom: calc(16px + env(safe-area-inset-bottom)); }
+    }
+    /* ═══ Glass Card ═══ */
+    .auth-card {
+      background: var(--surface); backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px);
+      border: 1px solid var(--glass-border); border-radius: 24px;
+      padding: 32px 20px; box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5);
+      animation: fadeUp 0.8s ease;
+    }
+    @media (min-width: 480px) {
+      .auth-card { border-radius: var(--radius); padding: 44px 32px; }
+    }
+    .auth-topbar { display:flex; justify-content:flex-end; margin-bottom:18px; }
+    .cb-lang-toggle {
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 999px;
+      padding: 10px 16px;
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+      font: inherit;
+      font-size: 0.82rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: var(--transition);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+    .cb-lang-toggle:hover { background: rgba(255,255,255,0.18); transform: translateY(-1px); }
+    .brand { text-align: center; margin-bottom: 32px; }
+    .logo-icon { font-size: 2.8rem; margin-bottom: 10px; display: block; filter: drop-shadow(0 0 15px var(--primary)); }
+    .title { font-size: 1.8rem; color: #fff; font-weight: 900; letter-spacing: -1px; margin-bottom: 4px; }
+    @media (min-width: 480px) {
+      .logo-icon { font-size: 3.5rem; margin-bottom: 12px; }
+      .title { font-size: 2.2rem; }
+    }
+    .subtitle { font-size: 0.95rem; color: var(--text-muted); font-weight: 500; }
+    /* Forms */
+    .form-panel { display: none; }
+    .form-panel.active { display: block; animation: fadeIn 0.3s ease; }
+    .form-group { margin-bottom: 22px; position: relative; }
+    .form-group label { display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px; font-weight: 700; padding-right: 4px; }
+    .form-control {
+      width: 100%; padding: 16px 20px; border-radius: 18px;
+      background: rgba(255, 255, 255, 0.05); border: 1.5px solid transparent;
+      color: #fff; font-family: inherit; font-size: 1rem; transition: var(--transition);
+      text-align: right;
+    }
+    html[dir="ltr"] .form-control { text-align: left; }
+    .form-control:focus { outline: none; border-color: var(--primary); background: rgba(255, 255, 255, 0.1); box-shadow: 0 0 0 4px rgba(29, 158, 117, 0.2); }
+    .form-control::placeholder { color: rgba(255, 255, 255, 0.25); }
+    .btn {
+      width: 100%; padding: 17px; border-radius: 18px; border: none;
+      font-family: inherit; font-size: 1.1rem; font-weight: 800;
+      cursor: pointer; transition: var(--transition);
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #1D9E75, #0F6E56); color: #fff;
+      box-shadow: 0 8px 24px rgba(29, 158, 117, 0.35);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(29, 158, 117, 0.45); }
+    .btn:disabled { opacity: 0.6; cursor: wait; transform: none; }
+    .toggle-link {
+      text-align: center; margin-top: 28px; color: var(--text-muted); font-size: 0.95rem; font-weight: 600;
+    }
+    .toggle-link span { color: var(--primary); text-decoration: none; font-weight: 900; cursor: pointer; margin-right: 4px; }
+    html[dir="ltr"] .toggle-link span { margin-right: 0; margin-left: 4px; }
+    .toggle-link span:hover { text-decoration: underline; }
+    .msg {
+      padding: 14px; border-radius: 14px; font-size: 0.9rem; margin-bottom: 24px; text-align: center;
+      display: none; animation: shake 0.4s ease;
+    }
+    .error-msg { background: rgba(231, 76, 60, 0.15); color: #ff7675; border: 1px solid rgba(231, 76, 60, 0.2); }
+    .success-msg { background: rgba(46, 204, 113, 0.15); color: #2ecc71; border: 1px solid rgba(46, 204, 113, 0.2); }
+    .msg.show { display: block; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+    /* Inputs direction */
+    input[type="tel"], input[type="email"], input[type="password"] { direction: ltr; }
+    input[type="text"] { direction: rtl; }
+    html[dir="ltr"] input[type="text"] { direction: ltr; }
+    /* Password toggle */
+    .pass-wrap { position: relative; }
+    .pass-toggle {
+      position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; color: var(--text-muted); cursor: pointer;
+      font-size: 1.1rem; padding: 4px; line-height: 1; transition: color 0.2s;
+    }
+    .pass-toggle:hover { color: #fff; }
+    /* Validation states */
+    .form-control.valid { border-color: var(--primary); }
+    .form-control.invalid { border-color: #e74c3c; }
+    /* Small helper text */
+    .field-hint { font-size: 0.72rem; color: var(--text-muted); margin-top: 5px; padding-right: 4px; }
+    /* intl-tel-input Overrides */
+    .iti { width: 100%; display: block; }
+    .iti__country-list {
+      background: #1e293b; border: 1px solid var(--glass-border); border-radius: 12px;
+      color: #fff; scrollbar-width: thin; z-index: 100;
+      max-height: 200px; max-width: calc(100vw - 40px);
+    }
+    .iti__country:hover { background: rgba(29, 158, 117, 0.2); }
+    .iti__selected-flag { border-radius: 18px 0 0 18px; padding-left: 14px; }
+    .iti--allow-dropdown .iti__flag-container:hover .iti__selected-flag { background: rgba(255, 255, 255, 0.05); }
+    .iti__country-name { color: #fff; font-size: 0.9rem; }
+    .iti__dial-code { color: var(--text-muted); }
+  </style>
+</head>
+<body>
+<div class="login-bg"></div>
+<div class="login-overlay"></div>
+<div class="container">
+  <div class="auth-card">
+    <div class="auth-topbar" id="lang-toggle-host"></div>
+    <div class="brand">
+      <span class="logo-icon">🎾</span>
+      <h1 class="title">بادل برو</h1>
+      <p class="subtitle" id="club-subtitle">نادي بادل رياضي متكامل</p>
+    </div>
+    <!-- Messages -->
+    <div class="msg error-msg" id="error-msg"></div>
+    <div class="msg success-msg" id="success-msg"></div>
+    <!-- Login Panel -->
+    <div class="form-panel active" id="panel-login">
+      <form id="login-form" autocomplete="on">
+        <div class="form-group">
+          <label>رقم الهاتف</label>
+          <input type="tel" id="login-email" class="form-control" placeholder="+201XXXXXXXX" required autocomplete="tel" inputmode="tel">
+        </div>
+        <div class="form-group">
+          <label>كلمة المرور</label>
+          <div class="pass-wrap">
+            <input type="password" id="login-pass" class="form-control" placeholder="••••••••" required autocomplete="current-password" style="padding-left:44px">
+            <button type="button" class="pass-toggle" onclick="togglePass('login-pass', this)">👁️</button>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary" id="login-btn">دخول</button>
+      </form>
+      <div class="toggle-link">
+        ليس لديك حساب؟ <span onclick="switchTab('register')">إنشاء حساب جديد</span>
+      </div>
+    </div>
+    <!-- Register Panel -->
+    <div class="form-panel" id="panel-register">
+      <form id="register-form" autocomplete="on">
+        <div class="form-group">
+          <label>اسم المستخدم</label>
+          <input type="text" id="reg-name" class="form-control" placeholder="الاسم الكامل" required autocomplete="name">
+        </div>
+        <div class="form-group">
+          <label>رقم الجوال</label>
+          <input type="tel" id="reg-phone" class="form-control" placeholder="+201XXXXXXXXX" required autocomplete="tel" inputmode="tel">
+          <div class="field-hint">مثال: +201011112222 (رقم الجوال مع مفتاح الدولة)</div>
+        </div>
+        <div class="form-group">
+          <label>البريد الإلكتروني</label>
+          <input type="email" id="reg-email" class="form-control" placeholder="example@email.com" required autocomplete="email" inputmode="email">
+        </div>
+        <div class="form-group">
+          <label>كلمة المرور</label>
+          <div class="pass-wrap">
+            <input type="password" id="reg-pass" class="form-control" placeholder="8 أحرف على الأقل" minlength="8" required autocomplete="new-password" style="padding-left:44px">
+            <button type="button" class="pass-toggle" onclick="togglePass('reg-pass', this)">👁️</button>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary" id="reg-btn">إنشاء حساب</button>
+      </form>
+      <div class="toggle-link">
+        لديك حساب بالفعل؟ <span onclick="switchTab('login')">تسجيل الدخول</span>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Firebase & ITI SDKs -->
+<script src="i18n.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/intlTelInput.min.js"></script>
+<script>
+  /* ═══ Firebase & Utils ═══ */
+  const firebaseConfig = {
+    apiKey: "YOUR_FIREBASE_API_KEY", authDomain: "YOUR_PROJECT.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID", storageBucket: "YOUR_PROJECT.firebasestorage.app",
+    messagingSenderId: "YOUR_SENDER_ID", appId: "YOUR_APP_ID"
+  };
+  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth(), db = firebase.firestore(), C_DOMAIN = '@customer-padel.com';
+  const CUSTOMER_LOGOUT_FLAG = 'pp_customer_logged_out';
+  const $ = id => document.getElementById(id);
+  function switchTab(t){ document.querySelectorAll('.form-panel').forEach(p=>p.classList.remove('active')); $('panel-'+t).classList.add('active'); hideMsg(); }
+  function hideMsg(){ $('error-msg').classList.remove('show'); $('success-msg').classList.remove('show'); }
+  function showError(t){ const e=$('error-msg'); e.textContent=t; e.classList.add('show'); }
+  function showSuccess(t){ const e=$('success-msg'); e.textContent=t; e.classList.add('show'); }
+  function togglePass(i, b){ const p=$(i); p.type=p.type==='password'?'text':'password'; b.textContent=p.type==='text'?'🙈':'👁️'; }
+  function isValidRealEmail(email){
+    const value = String(email || '').trim().toLowerCase();
+    if (!value) return false;
+    if (value.endsWith(C_DOMAIN)) return false;
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+  }
+  function normalizePhoneForAuth(phone){
+    const digits = String(phone || '').replace(/[^\d]/g,'');
+    if (!digits) return '';
+    if (digits.startsWith('20') && digits.length === 12 && digits[2] === '1') return digits;
+    if (digits.startsWith('01') && digits.length === 11) return `20${digits.slice(1)}`;
+    if (digits.startsWith('1') && digits.length === 10) return `20${digits}`;
+    return digits;
+  }
+  let isProcessing = false;
+  auth.onAuthStateChanged(u => {
+    const isLoggedOut = sessionStorage.getItem(CUSTOMER_LOGOUT_FLAG) === '1';
+    if (u && isLoggedOut) {
+      auth.signOut().catch(() => {});
+      return;
+    }
+    if(u && u.email.endsWith(C_DOMAIN) && !isLoggedOut) {
+      isProcessing = false;
+      location.href='home.html';
+    }
+  });
+  let itiLogin, itiReg;
+  document.addEventListener('DOMContentLoaded', () => {
+    window.cbInitLanguage({
+      toggleHostSelector: '#lang-toggle-host',
+      pageTitles: { ar: 'بادل برو — دخول', en: 'Padel Pro — Sign in' }
+    });
+    const cfg = { preferredCountries:['eg','sa','ae','kw','qa'], separateDialCode:true, utilsScript:"https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/utils.js" };
+    itiLogin = window.intlTelInput($('login-email'), cfg);
+    itiReg = window.intlTelInput($('reg-phone'), cfg);
+    itiLogin.setCountry('eg'); itiReg.setCountry('eg');
+  });
+  async function attemptLogin(p, btn, orig) {
+    isProcessing = true;
+    try {
+      await auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
+      const email = normalizePhoneForAuth(p) + C_DOMAIN;
+      const res = await auth.signInWithEmailAndPassword(email, $('login-pass').value);
+      if (res.user) {
+        sessionStorage.removeItem(CUSTOMER_LOGOUT_FLAG);
+        isProcessing = false;
+        location.href = 'home.html';
+      }
+    } catch(e) {
+      showError(window.cbTx('الرقم أو كلمة المرور غير صحيحة', 'The phone number or password is incorrect'));
+      btn.disabled=false;
+      btn.textContent=orig;
+    }
+  }
+  $('login-form').addEventListener('submit', async (e) => {
+    e.preventDefault(); hideMsg();
+    if (!itiLogin.isValidNumber()){ showError(window.cbTx('رقم غير صحيح', 'Invalid phone number')); return; }
+    const btn=$('login-btn'), orig=btn.textContent;
+    btn.disabled=true; btn.textContent=window.cbTx('جاري الدخول...', 'Signing in...');
+    await attemptLogin(itiLogin.getNumber(), btn, orig);
+  });
+  $('register-form').addEventListener('submit', async (e) => {
+    e.preventDefault(); hideMsg();
+    const name=$('reg-name').value.trim(), email=$('reg-email').value.trim().toLowerCase(), pass=$('reg-pass').value, btn=$('reg-btn');
+    if (!itiReg.isValidNumber() || !name || !pass || !email){ showError(window.cbTx('الاسم ورقم الهاتف والبريد الإلكتروني وكلمة المرور بيانات إلزامية', 'Name, phone number, email, and password are required')); return; }
+    if (!isValidRealEmail(email)){ showError(window.cbTx('أدخل بريدًا إلكترونيًا صحيحًا', 'Enter a valid email address')); return; }
+    if (pass.length < 8){ showError(window.cbTx('كلمة المرور يجب أن تكون 8 أحرف على الأقل', 'Password must be at least 8 characters')); return; }
+    btn.disabled=true; btn.textContent=window.cbTx('جاري الحفظ...', 'Saving...');
+    try {
+      isProcessing = true;
+      await auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
+      const full = itiReg.getNumber(), emailSynth = normalizePhoneForAuth(full) + C_DOMAIN;
+      const cred = await auth.createUserWithEmailAndPassword(emailSynth, pass);
+      await cred.user.updateProfile({ displayName: name });
+      await db.collection('customers_users').doc(cred.user.uid).set({ name, phone: full, email, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+      sessionStorage.removeItem(CUSTOMER_LOGOUT_FLAG);
+      showSuccess(window.cbTx('تم التسجيل بنجاح!', 'Registration completed successfully!')); setTimeout(()=>location.href='home.html', 1500);
+    } catch(err) {
+      showError(err.code==='auth/email-already-in-use'
+        ? window.cbTx('الرقم مسجل مسبقاً', 'This phone number is already registered')
+        : window.cbTx('خطأ في التسجيل', 'Registration failed'));
+      btn.disabled=false; btn.textContent=window.cbTx('إنشاء حساب', 'Create account');
+    }
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>بادل برو</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/css/intlTelInput.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { taj: ['Tajawal', 'sans-serif'] },
+          colors: {
+            primary:           { DEFAULT:'#1D9E75', light:'#E8F5F0', dark:'#0F6E56', container:'#34D399' },
+            surface:           { DEFAULT:'#FFFFFF', dim:'#F4F6FA', dark:'#1E293B', darker:'#0F172A' },
+            onSurface:         { DEFAULT:'#111827', muted:'#6B7280', hint:'#9CA3AF' },
+            danger:            '#DC2626',
+            amber:             '#D97706',
+          },
+          borderRadius: { '4xl':'2rem', '5xl':'2.5rem' },
+        }
+      }
+    }
+  </script>
+  <style>
+    * { -webkit-tap-highlight-color: transparent; }
+    body { font-family: 'Tajawal', sans-serif; }
+    html[dir="ltr"] body { direction: ltr; }
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .icon-fill { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .cb-lang-toggle {
+      border: 1px solid rgba(17, 24, 39, 0.08);
+      background: rgba(255,255,255,0.92);
+      color: #0F6E56;
+      border-radius: 999px;
+      padding: 9px 14px;
+      font: inherit;
+      font-size: .78rem;
+      font-weight: 900;
+      cursor: pointer;
+      transition: all .2s ease;
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+    }
+    .cb-lang-toggle:hover { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(15, 23, 42, 0.1); }
+    .dark .cb-lang-toggle { background: rgba(30,41,59,.92); color: #E8F5F0; border-color: rgba(255,255,255,.08); }
+    /* Kinetic blobs */
+    .blob { position: absolute; border-radius: 50%; filter: blur(80px); opacity: .18; pointer-events: none; animation: drift 12s ease-in-out infinite alternate; }
+    .blob-1 { width: 180px; height: 180px; background: #1D9E75; top: -40px; right: -40px; }
+    .blob-2 { width: 150px; height: 150px; background: #34D399; bottom: -30px; left: -30px; animation-delay: -4s; animation-duration: 14s; }
+    .blob-3 { width: 120px; height: 120px; background: #0F6E56; top: 40%; left: 30%; animation-delay: -7s; animation-duration: 16s; }
+    @media (min-width: 768px) {
+      .blob-1 { width: 320px; height: 320px; top: -60px; right: -80px; }
+      .blob-2 { width: 260px; height: 260px; bottom: -40px; left: -60px; }
+      .blob-3 { width: 200px; height: 200px; }
+    }
+    @keyframes drift {
+      0% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(30px, -20px) scale(1.1); }
+      100% { transform: translate(-20px, 30px) scale(0.95); }
+    }
+    /* Glass */
+    .glass { background: rgba(255,255,255,0.7); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); }
+    .dark .glass { background: rgba(30,41,59,0.75); }
+    /* Custom scrollbar hide */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { scrollbar-width: none; }
+    /* Loading */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loader-spin { animation: spin .65s linear infinite; }
+    /* Tab animation */
+    @keyframes fadeUp { from { opacity:0; transform: translateY(12px); } to { opacity:1; transform: translateY(0); } }
+    .tab-anim { animation: fadeUp .3s ease; }
+    /* Court card image zoom on hover */
+    .court-card:hover .court-img-inner { transform: scale(1.08); }
+    .booking-card { position: relative; overflow: hidden; }
+    .booking-card::before {
+      content: '';
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 4px;
+      background: currentColor;
+      opacity: .22;
+    }
+    .booking-stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .booking-stat {
+      border-radius: 16px;
+      padding: 10px 12px;
+      background: rgba(244, 246, 250, 0.92);
+      border: 1px solid rgba(17, 24, 39, 0.05);
+    }
+    .dark .booking-stat {
+      background: rgba(15, 23, 42, 0.45);
+      border-color: rgba(255,255,255,0.06);
+    }
+    html[dir="ltr"] #dd { left: auto; right: 0; }
+    html[dir="ltr"] #darkTgl { margin-right: 0; margin-left: auto; }
+    html[dir="ltr"] #tabHome,
+    html[dir="ltr"] #tabBookings,
+    html[dir="ltr"] #tabProfile,
+    html[dir="ltr"] #contactList,
+    html[dir="ltr"] #bkList,
+    html[dir="ltr"] #profSince { text-align: left; }
+    .court-cover {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .court-fallback {
+      position: absolute;
+      inset: 0;
+    }
+    /* Safe area bottom */
+    .safe-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
+    /* ITI Overrides */
+    .iti { width: 100%; display: block; }
+    .iti__country-list {
+      background: #1e293b; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px;
+      color: #fff; scrollbar-width: thin; z-index: 100;
+    }
+    .iti__country:hover { background: rgba(29,158,117,0.2); }
+    .iti__country-name { color: #fff; font-size: 0.9rem; }
+    .iti__dial-code { color: rgba(255,255,255,0.6); }
+    @media (max-width: 420px) {
+      #tabHome .relative.overflow-hidden .flex.gap-3.relative {
+        flex-direction: column;
+      }
+      #tabHome .relative.overflow-hidden .flex.gap-3.relative > * {
+        width: 100%;
+      }
+      #courtsList,
+      #drinksList,
+      #contactList {
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+      #infoStrip {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+        overflow: visible;
+      }
+      .info-pill {
+        width: 100%;
+        white-space: normal;
+        min-width: 0;
+      }
+      .info-pill-value {
+        font-size: 0.85rem;
+        line-height: 1.35;
+      }
+      #bkList {
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+      .booking-stats {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body class="bg-surface-dim dark:bg-surface-darker font-taj min-h-screen text-onSurface dark:text-gray-100 transition-colors duration-300">
+<!-- ═══ Loading Screen ═══ -->
+<div id="loader" class="fixed inset-0 z-[9999] bg-surface-dim dark:bg-surface-darker flex flex-col items-center justify-center gap-3 transition-opacity duration-300">
+  <div class="w-10 h-10 border-[3.5px] border-gray-200 dark:border-gray-700 border-t-primary rounded-full loader-spin"></div>
+  <p class="text-sm font-semibold text-onSurface-muted">جاري التحميل...</p>
+</div>
+<!-- ═══ Kinetic Background (hero area) ═══ -->
+<div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
+<!-- ═══ Header ═══ -->
+<header class="sticky top-0 z-[500] glass border-b border-black/5 dark:border-white/5">
+  <div class="max-w-3xl mx-auto flex items-center justify-between px-4 py-2.5">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center">
+        <span class="material-symbols-outlined text-white text-lg">sports_tennis</span>
+      </div>
+      <div>
+        <div class="text-[1.05rem] font-black text-primary-dark dark:text-primary" id="clubName">بادل برو</div>
+        <div class="text-[0.65rem] text-onSurface-hint font-semibold leading-none">نادي رياضي</div>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <div id="lang-toggle-host"></div>
+      <div class="relative">
+      <button id="hdrAv" onclick="toggleDD(event)" class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primary-dark text-white font-black text-sm flex items-center justify-center ring-2 ring-white dark:ring-surface-dark shadow-md shadow-primary/20 hover:scale-105 transition-transform cursor-pointer">?</button>
+      <!-- Dropdown -->
+      <div id="dd" class="hidden absolute top-[calc(100%+8px)] left-0 w-56 glass rounded-2xl shadow-2xl shadow-black/10 border border-black/5 dark:border-white/10 p-2 z-[600]">
+        <div class="px-3 py-2.5 border-b border-black/5 dark:border-white/5 mb-1.5">
+          <span id="ddName" class="block font-extrabold text-sm">...</span>
+          <span id="ddEmail" class="text-[0.7rem] text-onSurface-hint">...</span>
+        </div>
+        <button onclick="toggleDark()" class="flex items-center gap-2.5 w-full px-3 py-2.5 rounded-xl text-sm font-bold hover:bg-primary-light dark:hover:bg-primary/10 transition-colors cursor-pointer">
+          <span class="material-symbols-outlined text-lg">dark_mode</span>
+          الوضع الليلي
+          <div id="darkTgl" class="mr-auto w-9 h-5 rounded-full bg-gray-300 dark:bg-primary relative transition-colors">
+            <div class="absolute top-0.5 right-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform dark:-translate-x-4"></div>
+          </div>
+        </button>
+        <button onclick="switchTab('profile');closeDD()" class="flex items-center gap-2.5 w-full px-3 py-2.5 rounded-xl text-sm font-bold hover:bg-primary-light dark:hover:bg-primary/10 transition-colors cursor-pointer">
+          <span class="material-symbols-outlined text-lg">person</span>
+          تعديل الملف الشخصي
+        </button>
+        <div class="h-px bg-black/5 dark:bg-white/5 my-1"></div>
+        <button onclick="doLogout()" class="flex items-center gap-2.5 w-full px-3 py-2.5 rounded-xl text-sm font-bold text-danger hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors cursor-pointer">
+          <span class="material-symbols-outlined text-lg">logout</span>
+          تسجيل الخروج
+        </button>
+      </div>
+      </div>
+    </div>
+  </div>
+</header>
+<main class="relative z-10 max-w-3xl mx-auto pb-28">
+<!-- ══════════ TAB: Home ══════════ -->
+<div class="tab-anim" id="tabHome">
+  <!-- Hero Section -->
+  <div class="relative overflow-hidden bg-gradient-to-br from-[#0A2E1F] via-primary-dark to-primary rounded-b-[2.5rem] px-5 pt-8 pb-10 text-white">
+    <div class="absolute inset-0 opacity-[0.04]" style="background-image:url('data:image/svg+xml,<svg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'><circle cx=\'30\' cy=\'30\' r=\'1.5\' fill=\'white\'/></svg>');"></div>
+    <h1 id="heroHi" class="text-2xl font-black mb-1 relative">مرحباً! 👋</h1>
+    <p class="text-sm opacity-70 font-medium mb-6 relative">احجز ملعبك المفضل واستمتع باللعب</p>
+    <div class="flex gap-3 relative">
+      <a href="book.html" class="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-white text-primary-dark font-extrabold text-[0.95rem] shadow-lg shadow-black/15 hover:-translate-y-0.5 hover:shadow-xl transition-all">
+        <span class="material-symbols-outlined icon-fill text-xl">sports_tennis</span>
+        احجز الآن
+      </a>
+      <button onclick="switchTab('bookings')" class="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-white/10 text-white font-extrabold text-[0.95rem] border border-white/20 hover:bg-white/20 transition-all cursor-pointer">
+        <span class="material-symbols-outlined text-xl">event_note</span>
+        حجوزاتي
+      </button>
+    </div>
+  </div>
+  <!-- Info Pills -->
+  <div id="infoStrip" class="flex flex-wrap gap-2 px-4 -mt-4 relative z-20"></div>
+  <!-- Courts Section -->
+  <section id="secCourts" class="hidden mt-6 px-4">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-black" id="customer-courts-title">الملاعب المتاحة</h2>
+      <a href="book.html" class="text-xs font-bold text-primary flex items-center gap-0.5">
+        احجز الآن <span class="material-symbols-outlined text-sm">arrow_back</span>
+      </a>
+    </div>
+  </section>
+  <div id="courtsList" class="grid grid-cols-1 sm:grid-cols-2 gap-4 px-4"></div>
+  <!-- Drinks Section -->
+  <section id="secDrinks" class="hidden mt-8 px-4">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-black">المشروبات</h2>
+      <span class="text-[0.7rem] text-onSurface-hint font-semibold">أضف مشروبات أثناء الحجز</span>
+    </div>
+  </section>
+  <div id="drinksList" class="hidden grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5 px-4"></div>
+  <!-- Contact Section -->
+  <section id="secContact" class="hidden mt-8 px-4">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-black">تواصل معنا</h2>
+    </div>
+  </section>
+  <div id="contactList" class="flex flex-col gap-2.5 px-4"></div>
+  <div id="mapBox" class="hidden mx-4 mt-3 rounded-2xl overflow-hidden h-44 bg-surface dark:bg-surface-dark border border-black/5 dark:border-white/5"></div>
+</div>
+<!-- ══════════ TAB: Bookings ══════════ -->
+<div class="hidden tab-anim" id="tabBookings">
+  <div class="px-4 pt-6 pb-2">
+    <h2 class="text-xl font-black mb-1" id="customer-bookings-title">حجوزاتي</h2>
+    <p class="text-sm text-onSurface-muted font-medium" id="customer-bookings-subtitle">تابع جميع حجوزاتك من مكان واحد</p>
+  </div>
+  <div id="bkList" class="px-4 flex flex-col gap-3 pb-4">
+    <div class="text-center py-10"><div class="w-10 h-10 border-[3.5px] border-gray-200 dark:border-gray-700 border-t-primary rounded-full loader-spin mx-auto"></div></div>
+  </div>
+</div>
+<!-- ══════════ TAB: Profile ══════════ -->
+<div class="hidden tab-anim" id="tabProfile">
+  <div class="px-4 pt-8">
+    <!-- Avatar -->
+    <div id="profAv" class="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-primary-dark text-white text-3xl font-black flex items-center justify-center mx-auto mb-2 shadow-lg shadow-primary/25 ring-4 ring-surface-dim dark:ring-surface-darker">?</div>
+    <div id="profSince" class="text-xs text-onSurface-hint text-center mb-6 font-semibold"></div>
+    <!-- Form -->
+    <div class="bg-surface dark:bg-surface-dark rounded-2xl border border-black/5 dark:border-white/5 p-5 shadow-sm">
+      <div class="mb-4">
+        <label class="block text-xs font-bold text-onSurface-muted mb-1.5">الاسم</label>
+        <input type="text" id="profName" readonly autocomplete="name" class="w-full px-4 py-3 rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-onSurface-hint text-sm font-semibold cursor-default">
+      </div>
+      <div class="mb-4">
+        <label class="block text-xs font-bold text-onSurface-muted mb-1.5">رقم الهاتف</label>
+        <input type="tel" id="profPhone" readonly autocomplete="tel" inputmode="tel" dir="ltr"
+          class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-onSurface-hint text-sm font-semibold cursor-default">
+      </div>
+      <div class="mb-5">
+        <label class="block text-xs font-bold text-onSurface-muted mb-1.5">البريد الإلكتروني</label>
+        <input type="email" id="profEmail" readonly dir="ltr" class="text-right w-full px-4 py-3 rounded-xl border-[1.5px] border-gray-200 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-onSurface-hint text-sm font-semibold cursor-default">
+      </div>
+      <p class="text-[0.65rem] text-onSurface-hint text-center font-semibold mt-2">لتعديل بياناتك، يرجى التواصل مع الإدارة</p>
+    </div>
+    <div class="h-px bg-black/5 dark:bg-white/5 my-6"></div>
+    <button id="btnLogout" class="w-full py-3.5 rounded-xl border-[1.5px] border-danger text-danger font-extrabold text-[0.95rem] hover:bg-danger hover:text-white transition-all cursor-pointer">
+      تسجيل الخروج
+    </button>
+  </div>
+</div>
+</main>
+<!-- ═══ FAB ═══ -->
+<a href="book.html" class="fixed bottom-[88px] left-4 z-[201] w-14 h-14 rounded-full bg-gradient-to-br from-primary to-primary-dark text-white flex items-center justify-center shadow-lg shadow-primary/30 hover:scale-110 hover:shadow-xl transition-all">
+  <span class="material-symbols-outlined icon-fill text-2xl">sports_tennis</span>
+</a>
+<!-- ═══ Bottom Nav ═══ -->
+<nav class="fixed bottom-0 left-0 right-0 z-[200] safe-bottom">
+  <div class="max-w-3xl mx-auto glass rounded-t-[2rem] border-t border-black/5 dark:border-white/5 shadow-[0_-4px_24px_rgba(0,0,0,0.06)] flex items-center justify-around h-[68px]">
+    <button class="nv flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-2xl transition-all cursor-pointer text-onSurface-hint" data-t="home">
+      <span class="material-symbols-outlined text-[1.3rem]">home</span>
+      <span class="text-[0.68rem] font-semibold">الرئيسية</span>
+    </button>
+    <button class="nv flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-2xl transition-all cursor-pointer text-onSurface-hint" data-t="bookings">
+      <span class="material-symbols-outlined text-[1.3rem]">event_note</span>
+      <span class="text-[0.68rem] font-semibold">حجوزاتي</span>
+    </button>
+    <button class="nv flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-2xl transition-all cursor-pointer text-onSurface-hint" data-t="profile">
+      <span class="material-symbols-outlined text-[1.3rem]">person</span>
+      <span class="text-[0.68rem] font-semibold">حسابي</span>
+    </button>
+  </div>
+</nav>
+<!-- Toast -->
+<div id="toast" class="fixed bottom-24 left-1/2 -translate-x-1/2 translate-y-14 bg-[#0A2E1F] text-white px-6 py-2.5 rounded-full text-sm font-bold z-[300] opacity-0 transition-all duration-300 whitespace-nowrap pointer-events-none"></div>
+<!-- Firebase & ITI -->
+<script src="i18n.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/intlTelInput.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
+<script>
+// ═══ Firebase ═══
+firebase.initializeApp({
+  apiKey:"YOUR_FIREBASE_API_KEY",authDomain:"YOUR_PROJECT.firebaseapp.com",
+  projectId:"YOUR_PROJECT_ID",storageBucket:"YOUR_PROJECT.firebasestorage.app",
+  messagingSenderId:"YOUR_SENDER_ID",appId:"YOUR_APP_ID"
+});
+const auth=firebase.auth(), db=firebase.firestore();
+const CUSTOMER_LOGOUT_FLAG = 'pp_customer_logged_out';
+// ═══ State ═══
+let me=null, prof=null, myBk=[], bkUnsub=null, profileUnsub=null;
+let _settingsSnapshot = null, _courtsSnapshot = null, _drinksSnapshot = null;
+// ═══ Helpers ═══
+const esc=v=>v==null?'':String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const cur=n=>window.cbFormatCurrency ? window.cbFormatCurrency(n) : Number(n||0).toLocaleString('en-US')+' ج.م';
+const tx = (ar, en) => window.cbTx ? window.cbTx(ar, en) : ar;
+const displayLiteral = value => window.cbTranslateLiteral ? window.cbTranslateLiteral(String(value || '')) : String(value || '');
+const displayCourtName = value => {
+  const fallback = tx('ملعب', 'Court');
+  return window.cbCourtName ? window.cbCourtName(value || fallback) : (value || fallback);
+};
+const ini=n=>n?n.trim().charAt(0).toUpperCase():'?';
+const $=id=>document.getElementById(id);
+const normalizeCustomerName=(...candidates)=>{
+  for(const candidate of candidates){
+    if(typeof candidate!=='string') continue;
+    const value=candidate.trim();
+    if(value) return value;
+  }
+  return '';
+};
+async function syncCustomerName(user, profileName){
+  const resolvedName=normalizeCustomerName(profileName, user?.displayName);
+  if(!user || !resolvedName) return resolvedName;
+  const tasks=[];
+  if(user.displayName !== resolvedName){
+    tasks.push(user.updateProfile({ displayName: resolvedName }).catch(err=>console.warn('Failed to sync auth display name:', err)));
+  }
+  tasks.push(
+    db.collection('customers_users').doc(user.uid).set(
+      { name: resolvedName, updatedAt: firebase.firestore.FieldValue.serverTimestamp() },
+      { merge: true }
+    ).catch(err=>console.warn('Failed to sync Firestore name:', err))
+  );
+  await Promise.all(tasks);
+  return resolvedName;
+}
+function fmtDate(s){if(!s)return'';return window.cbFormatDate ? window.cbFormatDate(s,{weekday:'long',day:'numeric',month:'long'}) : String(s);}
+function fmtTs(ts){if(!ts)return'';const d=ts.toDate?ts.toDate():new Date(ts);return window.cbFormatDate ? window.cbFormatDate(d,{day:'numeric',month:'long',year:'numeric'}) : String(d);}
+function toast(m){const t=$('toast');t.textContent=m;t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)';setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(-50%) translateY(14px)'},2500)}
+function paymentStatusLabel(status){
+  return status==='paid'
+    ? window.cbTx('مدفوع', 'Paid')
+    : status==='partial'
+    ? window.cbTx('مدفوع جزئياً', 'Partially paid')
+    : window.cbTx('غير مدفوع', 'Unpaid');
+}
+function paymentMethodLabel(method){
+  return method==='instapay'
+    ? 'InstaPay'
+    : method==='transfer'
+    ? window.cbTx('تحويل بنكي', 'Bank transfer')
+    : method==='card'
+    ? window.cbTx('بطاقة', 'Card')
+    : window.cbTx('الدفع في النادي', 'Pay at the club');
+}
+function getStatusMeta(status){
+  const statuses = {
+    pending: { l: tx('قيد الانتظار', 'Pending'), c: 'amber', icon: 'schedule' },
+    confirmed: { l: tx('مؤكد', 'Confirmed'), c: 'primary', icon: 'check_circle' },
+    cancelled: { l: tx('ملغي', 'Cancelled'), c: 'danger', icon: 'cancel' },
+    completed: { l: tx('مكتمل', 'Completed'), c: 'gray', icon: 'task_alt' }
+  };
+  return statuses[status] || { l: displayLiteral(status || tx('قيد الانتظار', 'Pending')), c: 'gray', icon: 'schedule' };
+}
+function formatBookingRef(num){
+  const parsed = Number(num);
+  if(!Number.isFinite(parsed) || parsed <= 0) return '#----';
+  return `#${String(Math.trunc(parsed)).padStart(4,'0')}`;
+}
+function bookingRefOf(booking){
+  if(booking?.bookingNum) return formatBookingRef(booking.bookingNum);
+  const numericRef = String(booking?.bookingRef || '').trim().match(/^#?(\d{1,10})$/);
+  if(numericRef) return formatBookingRef(Number(numericRef[1]));
+  return '#----';
+}
+function getPaidAmount(booking){
+  const total = Number(booking.totalPrice || booking.price || 0);
+  if(booking.paymentStatus==='paid') return total;
+  if(booking.paymentStatus==='partial') return Number(booking.paidAmount || 0);
+  return 0;
+}
+function getInvoicePayload(booking){
+  const total = Number(booking.totalPrice || booking.price || 0);
+  const paid = getPaidAmount(booking);
+  const remaining = Math.max(0, total - paid);
+  const createdAt = booking.createdAt ? fmtTs(booking.createdAt) : fmtDate(booking.date);
+  const status = getStatusMeta(booking.status).l;
+  const drinksRows = Array.isArray(booking.drinks) && booking.drinks.length
+    ? booking.drinks.map(d => `<tr><td>${esc(displayLiteral(d.name || tx('خدمة إضافية', 'Extra service')))}</td><td>${esc(d.quantity || 1)}</td><td>${cur((d.price || 0) * (d.quantity || 1))}</td></tr>`).join('')
+    : `<tr><td colspan="3" style="text-align:center;color:#6B7280">${tx('لا توجد إضافات', 'No extras')}</td></tr>`;
+  return {
+    total,
+    paid,
+    remaining,
+    createdAt,
+    status,
+    drinksRows,
+    clubName: $('clubName')?.textContent?.trim() || tx('بادل برو', 'Padel Pro'),
+    courtName: booking.courtName ? displayCourtName(booking.courtName) : '-'
+  };
+}
+function getInvoiceStyles(){
+  const dir = window.cbDir ? window.cbDir() : 'rtl';
+  const textAlign = dir === 'ltr' ? 'left' : 'right';
+  return `
+    *{box-sizing:border-box}
+    body{font-family:'Tajawal',Arial,sans-serif;margin:0;background:#f4f6fa;color:#111827;padding:24px;direction:${dir};text-align:${textAlign}}
+    .sheet{max-width:820px;margin:0 auto;background:#fff;border-radius:28px;padding:28px;box-shadow:0 20px 60px rgba(15,110,86,.10);direction:${dir}}
+    .hero{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap;padding-bottom:18px;border-bottom:2px solid #E8F5F0}
+    .brand{font-size:1.6rem;font-weight:900;color:#0F6E56}
+    .sub{color:#6B7280;font-weight:600;font-size:.92rem;margin-top:6px}
+    .badge{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;background:#E8F5F0;color:#0F6E56;font-weight:800}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:22px}
+    .card{background:#F9FAFB;border:1px solid #E5E7EB;border-radius:18px;padding:16px}
+    .label{font-size:.76rem;color:#6B7280;font-weight:700;margin-bottom:6px}
+    .value{font-size:1rem;font-weight:800}
+    .section{margin-top:22px}
+    .title{font-size:1rem;font-weight:900;color:#0F6E56;margin-bottom:10px}
+    table{width:100%;border-collapse:collapse;background:#fff;border:1px solid #E5E7EB;border-radius:18px;overflow:hidden}
+    th,td{padding:12px 14px;border-bottom:1px solid #E5E7EB;text-align:${textAlign}}
+    th{background:#F3F4F6;font-size:.85rem}
+    .totals{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:18px}
+    .total-box{padding:16px;border-radius:18px;background:#F9FAFB;border:1px solid #E5E7EB}
+    .total-box strong{display:block;font-size:1.35rem;margin-top:6px}
+    .actions{display:flex;gap:12px;justify-content:center;margin-top:24px;flex-wrap:wrap}
+    .btn{border:none;border-radius:999px;padding:12px 22px;font-family:inherit;font-weight:800;cursor:pointer}
+    .btn-primary{background:#0F6E56;color:#fff}
+    .btn-light{background:#EEF2F7;color:#111827}
+    @media print{body{background:#fff;padding:0}.sheet{box-shadow:none;max-width:none;border-radius:0}.actions{display:none}}
+    @media (max-width:640px){body{padding:12px}.sheet{padding:18px;border-radius:20px}.grid,.totals{grid-template-columns:1fr}}
+  `;
+}
+function getInvoiceBodyMarkup(booking, includeActions=true){
+  const data = getInvoicePayload(booking);
+  const shareAction = `if(window.opener&&typeof window.opener.__shareInvoiceById==='function'){window.opener.__shareInvoiceById(${JSON.stringify(booking.id || '')});}else{alert(${JSON.stringify(tx('تعذر مشاركة الفاتورة من هذه النافذة', 'Unable to share the invoice from this window'))});}`;
+  return `
+    <div class="sheet">
+      <div class="hero">
+        <div>
+          <div class="brand">${esc(data.clubName)}</div>
+          <div class="sub">${tx('فاتورة حجز العميل', 'Customer booking invoice')}</div>
+        </div>
+        <div class="badge">${tx('رقم الحجز', 'Booking number')}: ${esc(bookingRefOf(booking))}</div>
+      </div>
+      <div class="grid">
+        <div class="card"><div class="label">${tx('العميل', 'Customer')}</div><div class="value">${esc(booking.customerName || tx('المستخدم', 'User'))}</div></div>
+        <div class="card"><div class="label">${tx('الهاتف', 'Phone')}</div><div class="value">${esc(booking.phone || '-')}</div></div>
+        <div class="card"><div class="label">${tx('الملعب', 'Court')}</div><div class="value">${esc(data.courtName)}</div></div>
+        <div class="card"><div class="label">${tx('التاريخ', 'Date')}</div><div class="value">${esc(fmtDate(booking.date) || booking.date || '-')}</div></div>
+        <div class="card"><div class="label">${tx('الوقت', 'Time')}</div><div class="value">${esc((booking.startTime || '-') + ' - ' + (booking.endTime || '-'))}</div></div>
+        <div class="card"><div class="label">${tx('طريقة الدفع', 'Payment method')}</div><div class="value">${esc(paymentMethodLabel(booking.paymentMethod))}</div></div>
+        <div class="card"><div class="label">${tx('حالة الحجز', 'Booking status')}</div><div class="value">${esc(data.status)}</div></div>
+        <div class="card"><div class="label">${tx('حالة السداد', 'Payment status')}</div><div class="value">${esc(paymentStatusLabel(booking.paymentStatus))}</div></div>
+      </div>
+      <div class="section">
+        <div class="title">${tx('الإضافات', 'Extras')}</div>
+        <table>
+          <thead><tr><th>${tx('الصنف', 'Item')}</th><th>${tx('الكمية', 'Quantity')}</th><th>${tx('الإجمالي', 'Total')}</th></tr></thead>
+          <tbody>${data.drinksRows}</tbody>
+        </table>
+      </div>
+      <div class="totals">
+        <div class="total-box"><div class="label">${tx('إجمالي الفاتورة', 'Invoice total')}</div><strong>${cur(data.total)}</strong></div>
+        <div class="total-box"><div class="label">${tx('المدفوع', 'Paid')}</div><strong>${cur(data.paid)}</strong></div>
+        <div class="total-box"><div class="label">${tx('المتبقي', 'Remaining')}</div><strong>${cur(data.remaining)}</strong></div>
+      </div>
+      <div class="section">
+        <div class="card">
+          <div class="label">${tx('تاريخ إنشاء الحجز', 'Booking created on')}</div>
+          <div class="value">${esc(data.createdAt || '-')}</div>
+        </div>
+      </div>
+      ${includeActions ? `<div class="actions">
+        <button class="btn btn-light" onclick="${shareAction}">${tx('مشاركة PDF', 'Share PDF')}</button>
+        <button class="btn btn-light" onclick="window.close()">${tx('إغلاق', 'Close')}</button>
+      </div>` : ''}
+    </div>
+  `;
+}
+function downloadBlob(blob, filename){
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+async function generateInvoicePdfBlob(booking){
+  if(!window.html2pdf) throw new Error('PDF library unavailable');
+  const host = document.createElement('div');
+  host.style.position = 'fixed';
+  host.style.left = '-99999px';
+  host.style.top = '0';
+  host.style.width = '820px';
+  host.style.direction = window.cbDir ? window.cbDir() : 'rtl';
+  host.innerHTML = `<style>${getInvoiceStyles()}</style>${getInvoiceBodyMarkup(booking, false)}`;
+  document.body.appendChild(host);
+  try{
+    const worker = window.html2pdf().set({
+      margin: 0,
+      filename: `invoice-${String(bookingRefOf(booking)).replace(/[^A-Za-z0-9-]/g,'') || Date.now()}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true, backgroundColor: '#f4f6fa' },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    }).from(host);
+    const blob = await worker.outputPdf('blob');
+    return blob;
+  } finally {
+    host.remove();
+  }
+}
+async function shareInvoicePdf(booking){
+  try{
+    const blob = await generateInvoicePdfBlob(booking);
+    const filename = `invoice-${String(bookingRefOf(booking)).replace(/[^A-Za-z0-9-]/g,'') || Date.now()}.pdf`;
+    const file = new File([blob], filename, { type: 'application/pdf' });
+    if(navigator.share && navigator.canShare && navigator.canShare({ files:[file] })){
+      await navigator.share({
+        title: `${tx('فاتورة الحجز', 'Booking invoice')} ${bookingRefOf(booking)}`.trim(),
+        text: `${tx('فاتورة حجز', 'Booking invoice')} ${displayCourtName(booking.courtName || '')}`.trim(),
+        files: [file]
+      });
+      toast(tx('تم فتح مشاركة الفاتورة PDF', 'Invoice PDF share opened'));
+      return;
+    }
+    downloadBlob(blob, filename);
+    toast(tx('تم تنزيل فاتورة PDF للمشاركة', 'Invoice PDF downloaded for sharing'));
+  }catch(err){
+    console.error('PDF share failed:', err);
+    toast(tx('تعذر مشاركة PDF حالياً', 'Unable to share the PDF right now'));
+  }
+}
+window.__shareInvoiceById = function(bookingId){
+  const booking = myBk.find(x => x.id === bookingId);
+  if (!booking) {
+    toast(tx('تعذر العثور على الحجز', 'Booking not found'));
+    return;
+  }
+  shareInvoicePdf(booking);
+};
+function openInvoice(booking){
+  if(!booking) return;
+  const invoiceWin = window.open('', '_blank');
+  if(!invoiceWin){ toast(tx('تعذر فتح الفاتورة', 'Unable to open the invoice')); return; }
+  const dir = window.cbDir ? window.cbDir() : 'rtl';
+  const lang = window.cbLang ? window.cbLang() : 'ar';
+  invoiceWin.document.write(`<!DOCTYPE html><html dir="${dir}" lang="${lang}"><head><meta charset="UTF-8">
+    <title>${tx('فاتورة الحجز', 'Booking invoice')} - ${esc(bookingRefOf(booking))}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+    <style>${getInvoiceStyles()}</style></head><body>
+    ${getInvoiceBodyMarkup(booking, true)}
+    </body></html>`);
+  invoiceWin.document.close();
+}
+const grads=['linear-gradient(135deg,#0F6E56,#1D9E75)','linear-gradient(135deg,#0E7490,#22D3EE)','linear-gradient(135deg,#1E40AF,#3B82F6)','linear-gradient(135deg,#B45309,#F59E0B)'];
+function cEmoji(t){if(!t)return'sports_tennis';t=t.toLowerCase();if(t.includes('padel')||t.includes('بادل'))return'sports_tennis';if(t.includes('tennis')||t.includes('تنس'))return'sports_tennis';if(t.includes('foot')||t.includes('كرة'))return'sports_soccer';return'stadium'}
+// ═══ Tab Switch ═══
+const navBtns=document.querySelectorAll('.nv');
+const tMap={home:'tabHome',bookings:'tabBookings',profile:'tabProfile'};
+function switchTab(t){
+  // Hide all tabs
+  Object.values(tMap).forEach(id=>{const el=$(id);if(el){el.classList.add('hidden');el.classList.remove('tab-anim')}});
+  // Deactivate nav buttons
+  navBtns.forEach(n=>{
+    n.classList.remove('text-primary','bg-primary-light','dark:bg-primary/10','font-bold');
+    n.classList.add('text-onSurface-hint');
+    n.querySelector('.material-symbols-outlined').classList.remove('icon-fill');
+  });
+  // Show target tab
+  const target=$(tMap[t]);
+  if(target){target.classList.remove('hidden');void target.offsetWidth;target.classList.add('tab-anim')}
+  // Activate nav button
+  const nb=document.querySelector(`.nv[data-t="${t}"]`);
+  if(nb){
+    nb.classList.add('text-primary','bg-primary-light','dark:bg-primary/10','font-bold');
+    nb.classList.remove('text-onSurface-hint');
+    nb.querySelector('.material-symbols-outlined').classList.add('icon-fill');
+  }
+  location.hash=t;window.scrollTo({top:0,behavior:'smooth'});
+}
+navBtns.forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.t)));
+function checkHash(){const h=location.hash.replace('#','');if(tMap[h])switchTab(h);else switchTab('home')}
+// ═══ Dropdown ═══
+function toggleDD(e){e.stopPropagation();$('dd').classList.toggle('hidden')}
+function closeDD(){$('dd').classList.add('hidden')}
+document.addEventListener('click',()=>closeDD());
+$('dd').addEventListener('click',e=>e.stopPropagation());
+// ═══ Dark Mode ═══
+function toggleDark(){
+  const isDark=document.documentElement.classList.toggle('dark');
+  document.body.classList.toggle('dark',isDark);
+  localStorage.setItem('pp_dark',isDark);
+  toast(isDark ? window.cbTx('الوضع الليلي 🌙', 'Dark mode 🌙') : window.cbTx('الوضع النهاري ☀️', 'Light mode ☀️'));
+}
+if(localStorage.getItem('pp_dark')==='true'){document.documentElement.classList.add('dark');document.body.classList.add('dark')}
+window.applyCustomerPageLanguage = function applyCustomerPageLanguage() {
+  if ($('customer-bookings-title')) $('customer-bookings-title').textContent = tx('حجوزاتي', 'My bookings');
+  if ($('customer-bookings-subtitle')) $('customer-bookings-subtitle').textContent = tx('تابع جميع حجوزاتك من مكان واحد', 'Track all your bookings in one place');
+  if ($('customer-courts-title')) $('customer-courts-title').textContent = tx('الملاعب المتاحة', 'Available courts');
+  if (_settingsSnapshot) {
+    renderInfoStrip(_settingsSnapshot);
+    renderContact(_settingsSnapshot);
+  }
+  if (_courtsSnapshot) renderCourts(_courtsSnapshot);
+  if (_drinksSnapshot) renderDrinks(_drinksSnapshot);
+  if (me || prof) {
+    const name = normalizeCustomerName(prof?.name, me?.displayName) || window.cbTx('المستخدم', 'User');
+    $('heroHi').textContent = `${window.cbTx('مرحباً', 'Hello')} ${name}! 👋`;
+    renderProf(name);
+  }
+  renderBk();
+  window.cbTranslateCustomerStatic?.(document.body);
+};
+window.cbInitLanguage({
+  toggleHostSelector: '#lang-toggle-host',
+  pageTitles: { ar: 'بادل برو', en: 'Padel Pro' }
+});
+// Safety timeout for loading
+setTimeout(()=>{const l=$('loader');if(l&&l.style.display!=='none'){l.style.opacity='0';setTimeout(()=>l.style.display='none',300)}},10000);
+// ═══ Auth Guard ═══
+auth.onAuthStateChanged(async user => {
+  if(profileUnsub){ profileUnsub(); profileUnsub = null; }
+  if(bkUnsub){ bkUnsub(); bkUnsub = null; }
+  if(!user){location.href='index.html';return}
+  me = user;
+  try{
+    profileUnsub = db.collection('customers_users').doc(user.uid).onSnapshot(async (pDoc) => {
+      if (pDoc.exists) {
+        prof = pDoc.data();
+        if (!prof.email && user.email && !user.email.endsWith('@customer-padel.com')) prof.email = user.email;
+      } else {
+        // Recovery for missing Firestore document
+        let phone = '';
+        if (user.email && user.email.endsWith('@customer-padel.com')) {
+          const raw = user.email.split('@')[0];
+          phone = raw.startsWith('+') ? raw : '+' + raw;
+        }
+        prof = {
+          name: normalizeCustomerName(user.displayName),
+          phone: phone,
+          email: (user.email && !user.email.endsWith('@customer-padel.com')) ? user.email : ''
+        };
+        // Try to auto-create without overwriting real email if it exists
+        try {
+          const toSet = { ...prof, updatedAt: firebase.firestore.FieldValue.serverTimestamp(), isAutoCreated: true };
+          if (!toSet.email) delete toSet.email; // Don't wipe real email if missing
+          await db.collection('customers_users').doc(user.uid).set(toSet, { merge: true });
+        } catch(e) { console.warn("Failed auto-create:", e); }
+      }
+      const resolvedName = normalizeCustomerName(prof?.name, user.displayName);
+      if(resolvedName){
+        if(prof.name !== resolvedName){
+          prof.name = await syncCustomerName(user, resolvedName);
+        } else {
+          prof.name = resolvedName;
+        }
+      }
+      const name=prof?.name||'المستخدم';
+      const init=ini(name);
+      // Update basic UI
+      $('hdrAv').textContent=init;
+      $('ddName').textContent=name;
+      if($('ddEmail')) $('ddEmail').textContent = prof.email || '';
+      $('heroHi').textContent=`${window.cbTx('مرحباً', 'Hello')} ${name}! 👋`;
+      renderProf(name);
+    });
+    const [cSnap,sDoc,dSnap]=await Promise.all([
+      db.collection('courts').get(),
+      db.collection('settings').doc('app').get(),
+      db.collection('drinks').get()
+    ]);
+    // Settings & Content
+    const s=sDoc.exists?sDoc.data():{};
+    if(s.clubName)$('clubName').textContent=s.clubName;
+    renderInfoStrip(s);
+    renderCourts(cSnap);
+    renderDrinks(dSnap);
+    renderContact(s);
+    // Bookings — real-time
+    try{
+      bkUnsub=db.collection('bookings').where('customerUid','==',me.uid)
+        .onSnapshot(snap=>{
+          myBk=snap.docs.map(d=>({id:d.id,...d.data()}));
+          myBk.sort((a,b)=>{
+            const ta=a.createdAt?(a.createdAt.toMillis?a.createdAt.toMillis():new Date(a.createdAt).getTime()):0;
+            const tb=b.createdAt?(b.createdAt.toMillis?b.createdAt.toMillis():new Date(b.createdAt).getTime()):0;
+            return tb-ta;
+          });
+          renderBk();
+        },async err=>{
+          console.warn('Bookings index missing, fallback:',err);
+          try{
+            const all=await db.collection('bookings').where('customerUid','==',me.uid).get();
+            myBk=all.docs.map(d=>({id:d.id,...d.data()}));
+            myBk.sort((a,b)=>{const ta=a.createdAt?(a.createdAt.toMillis?a.createdAt.toMillis():new Date(a.createdAt).getTime()):0;const tb=b.createdAt?(b.createdAt.toMillis?b.createdAt.toMillis():new Date(b.createdAt).getTime()):0;return tb-ta});
+          }catch(e){myBk=[]}
+          renderBk();
+        });
+    }catch(e){myBk=[];renderBk()}
+    checkHash();
+  }catch(err){
+    console.error('Load error:',err);
+  }finally{
+    const l=$('loader');l.style.opacity='0';setTimeout(()=>l.style.display='none',300);
+  }
+});
+// ═══ Render Info Strip ═══
+function renderInfoStrip(s){
+  _settingsSnapshot = s;
+  let html='';
+  if(s.workingHoursStart) html+=infoPill('schedule','ساعات العمل',formatBusinessHours(s.workingHoursStart, s.workingHoursEnd||'23:00'),'tabular-nums');
+  if(s.location) html+=infoPill('location_on','الموقع',esc(s.location));
+  if(s.contactPhone) html+=infoPill('call','للتواصل',s.contactPhone,'tabular-nums');
+  $('infoStrip').innerHTML=html;
+  window.cbTranslateCustomerStatic?.($('infoStrip'));
+}
+function infoPill(icon,label,value,extraValueClass=''){
+  return `<div class="info-pill flex items-center gap-2 px-4 py-2.5 bg-white/95 dark:bg-surface-dark rounded-2xl shadow-sm border border-black/5 dark:border-white/5 flex-shrink-0 min-w-fit"><span class="material-symbols-outlined text-primary text-[1.05rem] flex-shrink-0">${icon}</span><div class="flex items-center gap-1.5 leading-none min-w-0"><span class="text-[0.68rem] font-extrabold text-onSurface-hint flex-shrink-0">${label}</span><span class="info-pill-value text-[0.9rem] font-black text-primary-dark dark:text-white ${extraValueClass}">${value}</span></div></div>`;
+}
+function formatClockMeridiem(time){
+  return window.cbFormatTime ? window.cbFormatTime(time) : (time || '');
+}
+function formatBusinessHours(startTime, endTime){
+  return `${formatClockMeridiem(startTime)} - ${formatClockMeridiem(endTime)}`;
+}
+// ═══ Render Courts ═══
+const localCourtImgs = [
+  '../assets/courts/court1.png',
+  '../assets/courts/court2.png',
+  '../assets/courts/court3.png',
+  '../assets/courts/court4.png'
+];
+function renderCourts(snap){
+  _courtsSnapshot = snap;
+  const courts=snap.docs.map(d=>({id:d.id,...d.data()})).filter(c=>c.status==='active');
+  if(!courts.length)return;
+  $('secCourts').classList.remove('hidden');
+  $('courtsList').innerHTML=courts.map((c,i)=>{
+    // Use court's imageUrl if set, else fall back to local court images by index
+    let img=c.imageUrl||'';
+    if(img&&!img.startsWith('http')&&!img.startsWith('../'))img='../'+img;
+    if(!img) img=localCourtImgs[i%localCourtImgs.length];
+    const grad=grads[i%grads.length];
+    const dim=c.dimensions||'';
+    const tp=c.type||'Padel';
+    return `<div class="court-card group bg-surface dark:bg-surface-dark rounded-2xl overflow-hidden border border-black/5 dark:border-white/5 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+      <div class="relative h-52 overflow-hidden">
+        <div class="court-fallback" style="background:${grad}"></div>
+        <img class="court-img-inner court-cover absolute inset-0 transition-transform duration-500"
+          src="${img}" alt="${esc(displayCourtName(c.name))}"
+          onerror="this.style.display='none'">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
+        <div class="absolute top-3 right-3 px-3 py-1 rounded-full bg-primary/90 text-white text-[0.62rem] font-extrabold backdrop-blur-sm shadow">متوفر</div>
+        <div class="absolute bottom-0 right-0 left-0 p-4">
+          <h3 class="text-white font-black text-xl drop-shadow-lg mb-1">${esc(displayCourtName(c.name))}</h3>
+          <div class="flex items-center gap-3 text-white/70 text-xs font-semibold">
+            ${dim?`<span class="flex items-center gap-1"><span class="material-symbols-outlined text-xs">straighten</span>${esc(dim)}</span>`:''}
+            <span class="flex items-center gap-1"><span class="material-symbols-outlined text-xs">category</span>${esc(tp)}</span>
+          </div>
+        </div>
+      </div>
+      <div class="p-4 flex items-center justify-between">
+        <div>
+          <div class="text-xs text-onSurface-hint font-semibold mb-0.5">السعر لكل ساعة</div>
+          <div class="text-xl font-black text-primary">${cur(c.pricePerHour)}</div>
+        </div>
+        <a href="book.html?courtId=${c.id}" class="flex items-center gap-1.5 px-5 py-3 rounded-xl bg-gradient-to-l from-primary to-primary-container text-white text-sm font-extrabold shadow-md shadow-primary/25 hover:shadow-lg hover:-translate-y-0.5 transition-all">
+          <span class="material-symbols-outlined icon-fill text-base">sports_tennis</span> احجز
+        </a>
+      </div>
+    </div>`;
+  }).join('');
+  window.cbTranslateCustomerStatic?.($('secCourts'));
+  window.cbTranslateCustomerStatic?.($('courtsList'));
+}
+// ═══ Render Drinks ═══
+function renderDrinks(snap){
+  _drinksSnapshot = snap;
+  let drinks = snap.docs.map(d=>({id: d.id, ...d.data()})).filter(d=>d.available !== false);
+  drinks.sort((a,b)=>(a.order||0)-(b.order||0));
+  if (drinks.length === 0) {
+    if ($('secDrinks')) $('secDrinks').classList.add('hidden');
+    return;
+  }
+  if ($('secDrinks')) $('secDrinks').classList.remove('hidden');
+  const dl=$('drinksList');
+  if (dl) {
+    dl.classList.remove('hidden');
+    dl.innerHTML=drinks.map(d=>`
+    <div class="bg-surface dark:bg-surface-dark rounded-2xl p-3 text-center border border-black/5 dark:border-white/5 shadow-sm hover:shadow-md transition-shadow">
+      <div class="text-2xl mb-1">${d.emoji||'🥤'}</div>
+      <div class="text-xs font-bold text-onSurface dark:text-gray-200 mb-0.5">${esc(displayLiteral(d.name))}</div>
+      <div class="text-xs font-extrabold text-primary">${cur(d.price)}</div>
+    </div>`).join('');
+    window.cbTranslateCustomerStatic?.($('secDrinks'));
+    window.cbTranslateCustomerStatic?.(dl);
+  }
+}
+// ═══ Render Contact ═══
+function renderContact(s){
+  _settingsSnapshot = s;
+  const phone=s.contactPhone, insta=s.instagramUrl, loc=s.location, mapUrl=s.mapUrl;
+  if(!phone&&!insta&&!loc) return;
+  $('secContact').classList.remove('hidden');
+  let h='';
+  if(phone){
+    h+=`<a href="tel:${phone}" class="flex items-center gap-3 p-3.5 bg-surface dark:bg-surface-dark rounded-2xl border border-black/5 dark:border-white/5 hover:border-primary hover:shadow-md transition-all group">
+      <div class="w-11 h-11 rounded-xl bg-primary-light dark:bg-primary/10 flex items-center justify-center flex-shrink-0">
+        <span class="material-symbols-outlined text-primary-dark dark:text-primary text-xl">call</span>
+      </div>
+      <div class="flex-1 min-w-0">
+        <div class="text-[0.68rem] text-onSurface-hint font-semibold">رقم الهاتف</div>
+        <div class="text-sm font-extrabold">${phone}</div>
+      </div>
+      <span class="material-symbols-outlined text-onSurface-hint group-hover:text-primary text-lg transition-colors">arrow_back</span>
+    </a>`;
+  }
+  if(loc){
+    h+=`<div class="flex items-center gap-3 p-3.5 bg-surface dark:bg-surface-dark rounded-2xl border border-black/5 dark:border-white/5">
+      <div class="w-11 h-11 rounded-xl bg-primary-light dark:bg-primary/10 flex items-center justify-center flex-shrink-0">
+        <span class="material-symbols-outlined text-primary-dark dark:text-primary text-xl">location_on</span>
+      </div>
+      <div class="flex-1 min-w-0">
+        <div class="text-[0.68rem] text-onSurface-hint font-semibold">الموقع</div>
+        <div class="text-sm font-extrabold">${esc(loc)}</div>
+      </div>
+    </div>`;
+  }
+  if(insta){
+    const user=insta.startsWith('http')?insta.split('/').pop():insta;
+    const link=insta.startsWith('http')?insta:`https://instagram.com/${user}`;
+    h+=`<a href="${link}" target="_blank" class="flex items-center gap-3 p-3.5 bg-surface dark:bg-surface-dark rounded-2xl border border-black/5 dark:border-white/5 hover:border-primary hover:shadow-md transition-all group">
+      <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-purple-500/10 to-pink-500/10 flex items-center justify-center flex-shrink-0">
+        <span class="material-symbols-outlined text-pink-500 text-xl">photo_camera</span>
+      </div>
+      <div class="flex-1 min-w-0">
+        <div class="text-[0.68rem] text-onSurface-hint font-semibold">انستجرام</div>
+        <div class="text-sm font-extrabold">@${esc(user)}</div>
+      </div>
+      <span class="material-symbols-outlined text-onSurface-hint group-hover:text-primary text-lg transition-colors">arrow_back</span>
+    </a>`;
+  }
+  if(s.workingHoursStart){
+    h+=`<div class="flex items-center gap-3 p-3.5 bg-surface dark:bg-surface-dark rounded-2xl border border-black/5 dark:border-white/5">
+      <div class="w-11 h-11 rounded-xl bg-primary-light dark:bg-primary/10 flex items-center justify-center flex-shrink-0">
+        <span class="material-symbols-outlined text-primary-dark dark:text-primary text-xl">schedule</span>
+      </div>
+      <div class="flex-1 min-w-0">
+        <div class="text-[0.68rem] text-onSurface-hint font-semibold">ساعات العمل</div>
+        <div class="text-sm font-extrabold">${s.workingHoursStart} – ${s.workingHoursEnd||'23:00'}</div>
+      </div>
+    </div>`;
+  }
+  // Always show Google Maps location link
+  const MAPS_LINK = 'https://maps.app.goo.gl/XwojpUgDuVeTde3L8';
+  h+=`<a href="${MAPS_LINK}" target="_blank" class="flex items-center gap-3 p-3.5 bg-surface dark:bg-surface-dark rounded-2xl border border-black/5 dark:border-white/5 hover:border-primary hover:shadow-md transition-all group">
+    <div class="w-11 h-11 rounded-xl bg-primary-light dark:bg-primary/10 flex items-center justify-center flex-shrink-0">
+      <span class="material-symbols-outlined text-primary-dark dark:text-primary text-xl">map</span>
+    </div>
+    <div class="flex-1 min-w-0">
+      <div class="text-[0.68rem] text-onSurface-hint font-semibold">الموقع على الخريطة</div>
+      <div class="text-sm font-extrabold">افتح في خرائط Google</div>
+    </div>
+    <span class="material-symbols-outlined text-onSurface-hint group-hover:text-primary text-lg transition-colors">arrow_back</span>
+  </a>`;
+  $('contactList').innerHTML=h;
+  window.cbTranslateCustomerStatic?.($('secContact'));
+  window.cbTranslateCustomerStatic?.($('contactList'));
+  // Show embedded map if mapUrl in settings, else use Google Maps embed for our location
+  const mb=$('mapBox');
+  const embedUrl = mapUrl || 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3457.!2d31.!3d30.!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzDCsDAwJzAwLjAiTiAzMcKwMDAnMDAuMCJF!5e0!3m2!1sar!2seg!4v1';
+  const safeMapUrl = (mapUrl && /^https:\/\/(www\.)?google\.com\/maps|^https:\/\/maps\.google\.com/.test(mapUrl))
+    ? mapUrl
+    : 'https://maps.google.com/maps?q=' + encodeURIComponent(loc || 'بادل برو') + '&output=embed';
+  mb.classList.remove('hidden');
+  const ifrm = document.createElement('iframe');
+  ifrm.src = safeMapUrl;
+  ifrm.allowFullscreen = true;
+  ifrm.loading = 'lazy';
+  ifrm.className = 'w-full h-full border-none';
+  ifrm.onerror = () => mb.classList.add('hidden');
+  mb.innerHTML = '';
+  mb.appendChild(ifrm);
+  if(!mapUrl && !loc) mb.classList.add('hidden');
+}
+// ═══ Render Bookings ═══
+function renderBk(){
+  const c=$('bkList');
+  if(!myBk.length){
+    c.innerHTML=`<div class="text-center py-16">
+      <span class="material-symbols-outlined text-5xl text-onSurface-hint/40 mb-3 block">event_note</span>
+      <div class="text-base font-extrabold mb-1">لم تقم بأي حجز بعد</div>
+      <div class="text-sm text-onSurface-muted mb-5">احجز ملعبك الآن واستمتع باللعب!</div>
+      <a href="book.html" class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-l from-primary to-primary-container text-white rounded-full font-bold text-sm shadow-md shadow-primary/20 hover:shadow-lg transition-all">
+        <span class="material-symbols-outlined icon-fill text-lg">sports_tennis</span> احجز الآن
+      </a>
+    </div>`;
+    window.cbTranslateCustomerStatic?.(c);
+    return;
+  }
+  const statusColors = {
+    amber: { bg:'bg-amber-50 dark:bg-amber-500/10', text:'text-amber-600 dark:text-amber-400', border:'border-r-amber-500' },
+    primary: { bg:'bg-primary-light dark:bg-primary/10', text:'text-primary dark:text-primary', border:'border-r-primary' },
+    danger: { bg:'bg-red-50 dark:bg-red-500/10', text:'text-danger', border:'border-r-danger' },
+    gray: { bg:'bg-gray-100 dark:bg-gray-700', text:'text-gray-500', border:'border-r-gray-400' }
+  };
+  c.innerHTML=myBk.map(b=>{
+    const st=getStatusMeta(b.status);
+    const sc=statusColors[st.c]||statusColors.gray;
+    const total = Number(b.totalPrice||b.price||0);
+    const paid = getPaidAmount(b);
+    const remaining = Math.max(0, total - paid);
+    let drH='';
+    if(b.drinks&&b.drinks.length){
+      drH=`<div class="mt-2.5 pt-2.5 border-t border-black/5 dark:border-white/5 text-xs text-onSurface-hint flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-sm">local_cafe</span>
+        ${b.drinks.map(d=>`${displayLiteral(d.name || tx('خدمة إضافية', 'Extra service'))} x${d.quantity||1}`).join(window.cbLang && window.cbLang() === 'en' ? ', ' : '، ')}
+      </div>`;
+    }
+    return `<div class="booking-card bg-surface dark:bg-surface-dark rounded-2xl p-4 border border-black/5 dark:border-white/5 shadow-sm ${sc.text}">
+      <div class="flex items-start justify-between gap-3 flex-wrap mb-3">
+        <div class="min-w-0 flex-1">
+          <div class="flex items-center gap-2 flex-wrap mb-2">
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[0.7rem] font-bold ${sc.bg} ${sc.text}">
+              <span class="material-symbols-outlined text-sm">${st.icon}</span> ${st.l}
+            </span>
+            <span class="text-[0.68rem] text-onSurface-hint font-semibold">${fmtDate(b.date)}</span>
+          </div>
+          <div class="text-[1rem] font-black text-onSurface dark:text-white mb-1">${esc(displayCourtName(b.courtName || tx('ملعب', 'Court')))}</div>
+          <div class="flex flex-wrap gap-3 text-xs text-onSurface-muted font-semibold">
+            <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">schedule</span>${b.startTime||''} - ${b.endTime||''}</span>
+            <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">payments</span>${cur(total)}</span>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <button data-invoice-id="${esc(b.id)}" class="invoice-bk-btn flex items-center gap-1 px-3 py-2 rounded-xl border border-primary/20 bg-primary-light dark:bg-primary/10 text-xs font-black text-primary hover:border-primary transition-colors cursor-pointer">
+            <span class="material-symbols-outlined text-sm">receipt_long</span> ${tx('الفاتورة', 'Invoice')}
+          </button>
+        </div>
+      </div>
+      <div class="booking-stats mt-3">
+        <div class="booking-stat">
+          <div class="text-[0.68rem] text-onSurface-hint font-bold">${tx('إجمالي الحجز', 'Booking total')}</div>
+          <div class="text-sm font-black text-onSurface dark:text-white">${cur(total)}</div>
+        </div>
+        <div class="booking-stat">
+          <div class="text-[0.68rem] text-onSurface-hint font-bold">${tx('المدفوع', 'Paid')}</div>
+          <div class="text-sm font-black text-primary">${cur(paid)}</div>
+        </div>
+        <div class="booking-stat">
+          <div class="text-[0.68rem] text-onSurface-hint font-bold">${tx('المتبقي', 'Remaining')}</div>
+          <div class="text-sm font-black ${remaining>0?'text-danger':'text-primary'}">${cur(remaining)}</div>
+        </div>
+      </div>
+      <div class="mt-3 flex flex-wrap gap-2 text-[0.72rem] text-onSurface-hint font-semibold">
+        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/5 dark:bg-white/5">${tx('طريقة الدفع', 'Payment method')}: ${paymentMethodLabel(b.paymentMethod)}</span>
+        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/5 dark:bg-white/5">${tx('السداد', 'Payment')}: ${paymentStatusLabel(b.paymentStatus)}</span>
+      </div>
+      ${drH ? `<div class="mt-3">${drH}</div>` : ''}
+    </div>`;
+  }).join('');
+  window.cbTranslateCustomerStatic?.(c);
+}
+document.addEventListener('click', function(e) {
+  const invoiceBtn = e.target.closest('.invoice-bk-btn');
+  if (!invoiceBtn) return;
+  const invoiceId = invoiceBtn.dataset.invoiceId;
+  const booking = myBk.find(x => x.id === invoiceId);
+  if (booking) openInvoice(booking);
+});
+// ═══ Profile ═══
+let itiProf;
+function renderProf(name){
+  $('profAv').textContent=ini(name);
+  $('profName').value=prof.name||name||'';
+  $('profPhone').value=prof.phone||'';
+  $('profEmail').value=prof.email||''; // Real email from DB, never synthetic
+  if($('ddEmail')) $('ddEmail').textContent = prof.email || '';
+
+  if(!itiProf){
+    itiProf = window.intlTelInput($('profPhone'), {
+      preferredCountries: ['eg', 'sa', 'ae', 'kw', 'qa'],
+      separateDialCode: true,
+      utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/utils.js"
+    });
+  } else {
+    itiProf.setNumber(prof.phone || '');
+  }
+  if(prof.createdAt)$('profSince').textContent=`${window.cbTx('عضو منذ', 'Member since')} ${fmtTs(prof.createdAt)}`;
+  else if(me.metadata&&me.metadata.creationTime){
+    const d=new Date(me.metadata.creationTime);
+    $('profSince').textContent=`${window.cbTx('عضو منذ', 'Member since')} ${window.cbFormatDate ? window.cbFormatDate(d,{day:'numeric',month:'long',year:'numeric'}) : d.toLocaleDateString()}`;
+  }
+  window.cbTranslateCustomerStatic?.($('tabProfile'));
+}
+// ═══ Logout ═══
+function doLogout(){
+  if(!confirm(window.cbTx('هل أنت متأكد من تسجيل الخروج؟', 'Are you sure you want to log out?')))return;
+  if(profileUnsub){ profileUnsub(); profileUnsub = null; }
+  if(bkUnsub){ bkUnsub(); bkUnsub = null; }
+  sessionStorage.setItem(CUSTOMER_LOGOUT_FLAG, '1');
+  auth.signOut()
+    .then(()=>location.href='index.html')
+    .catch(()=>location.href='index.html');
+}
+$('btnLogout').addEventListener('click',doLogout);
+window.addEventListener('beforeunload', () => {
+  if(profileUnsub){ profileUnsub(); profileUnsub = null; }
+  if(bkUnsub){ bkUnsub(); bkUnsub = null; }
+});
+// Hash nav
+window.addEventListener('hashchange',checkHash);
+</script>
+</body>
+</html>

@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>بادل برو — احجز ملعبك</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { taj: ['Tajawal', 'sans-serif'] },
+          colors: {
+            primary:    { DEFAULT:'#00694c', light:'#e8f5f0', dark:'#004d38', container:'#008560', fixed:'#86f8c9', 'fixed-dim':'#68dbae' },
+            surface:    { DEFAULT:'#f6fafe', low:'#f0f4f8', high:'#e4e9ed', dim:'#d6dade', dark:'#1e2b26', darker:'#101a15' },
+            outline:    { DEFAULT:'#6d7a73', variant:'#bccac1' },
+            secondary:  { DEFAULT:'#3e6655', container:'#bdead3' },
+            tertiary:   { DEFAULT:'#765700', fixed:'#ffdfa0', 'fixed-dim':'#fbbc00' },
+            error:      { DEFAULT:'#ba1a1a', container:'#ffdad6' },
+            amber:      { DEFAULT:'#D97706' },
+          },
+          borderRadius: { '4xl':'2rem', '5xl':'2.5rem' },
+        }
+      }
+    }
+  </script>
+  <style>
+    * { -webkit-tap-highlight-color: transparent; }
+    body { font-family: 'Tajawal', sans-serif; }
+    html[dir="ltr"] body { direction: ltr; }
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .icon-fill { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .cb-lang-toggle {
+      border: 1px solid rgba(17, 24, 39, 0.08);
+      background: rgba(255,255,255,0.92);
+      color: #00694c;
+      border-radius: 999px;
+      padding: 9px 14px;
+      font: inherit;
+      font-size: .78rem;
+      font-weight: 900;
+      cursor: pointer;
+      transition: all .2s ease;
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+    }
+    .cb-lang-toggle:hover { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(15, 23, 42, 0.1); }
+    .dark .cb-lang-toggle { background: rgba(30,43,38,.92); color: #E8F5F0; border-color: rgba(255,255,255,.08); }
+    /* Blobs — responsive */
+    .blob { position: fixed; border-radius: 50%; filter: blur(90px); opacity: .12; pointer-events: none; animation: drift 14s ease-in-out infinite alternate; z-index: 0; }
+    .blob-1 { width: 200px; height: 200px; background: #68dbae; top: -50px; right: -50px; }
+    .blob-2 { width: 160px; height: 160px; background: #ffdfa0; bottom: -40px; left: -40px; animation-delay: -5s; }
+    .blob-3 { width: 120px; height: 120px; background: #00694c; top: 50%; left: 20%; animation-delay: -9s; animation-duration: 18s; }
+    @media (min-width: 768px) {
+      .blob-1 { width: 360px; height: 360px; top: -80px; right: -80px; }
+      .blob-2 { width: 280px; height: 280px; bottom: -60px; left: -60px; }
+      .blob-3 { width: 200px; height: 200px; }
+    }
+    @keyframes drift { 0%{transform:translate(0,0) scale(1)} 50%{transform:translate(28px,-20px) scale(1.08)} 100%{transform:translate(-18px,28px) scale(.94)} }
+    /* Glass */
+    .glass { background: rgba(255,255,255,.72); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); }
+    .dark .glass { background: rgba(30,43,38,.78); }
+    /* Scrollbar */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { scrollbar-width: none; }
+    /* Loading */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-spin { animation: spin .65s linear infinite; }
+    /* Fade up */
+    @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+    .fade-up { animation: fadeUp .3s ease; }
+    /* ── Slot Grid ── */
+    .grid-wrap { overflow: auto; max-height: 56vh; -webkit-overflow-scrolling: touch; }
+    @supports (height: 100dvh) { .grid-wrap { max-height: 56dvh; } }
+    .grid-wrap::-webkit-scrollbar { width: 4px; height: 4px; }
+    .grid-wrap::-webkit-scrollbar-track { background: transparent; }
+    .grid-wrap::-webkit-scrollbar-thumb { background: #bccac1; border-radius: 99px; }
+    .slots-grid { display: grid; gap: 3px; }
+    .slot-time { min-width: 44px; padding: 5px 2px; text-align: center; font-size: .72rem; font-weight: 700; color: #6d7a73; white-space: nowrap; display: flex; align-items: center; justify-content: center; }
+    .slot-time.half { color: #bccac1; font-size: .65rem; }
+    .slot {
+      height: 44px; border-radius: 8px; cursor: pointer; transition: all .2s;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .7rem; font-weight: 600; overflow: hidden; position: relative;
+      min-width: 0;
+    }
+    .slot-lbl { font-size: .7rem; font-weight: 700; text-align: center; pointer-events: none; line-height: 1.3; }
+    .slot-lbl-end { font-weight: 400; opacity: .75; font-size: .6rem; display: block; }
+    @media (min-width: 768px) {
+      .slot-time { min-width: 54px; font-size: .68rem; }
+      .slot-time.half { font-size: .62rem; }
+      .slot { height: 38px; font-size: .6rem; }
+      .slot-lbl { font-size: .6rem; }
+      .slot-lbl-end { font-size: .55rem; }
+    }
+    .slot.available { background: #e8f5f0; color: #004d38; border: 1px dashed rgba(0,105,76,.25); }
+    .slot.available:hover { background: #00694c; color: #fff; border-style: solid; transform: scale(1.04); }
+    .slot.booked {
+      background: rgba(220,38,38,.08);
+      color: #DC2626;
+      border: 1px solid rgba(220,38,38,.18);
+      cursor: default;
+    }
+    .slot-booked-mark {
+      font-size: 1.05rem;
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: 1px;
+    }
+    .slot.blocked { background: repeating-linear-gradient(45deg,rgba(245,158,11,.07),rgba(245,158,11,.07) 4px,transparent 4px,transparent 10px); border: 1px solid rgba(245,158,11,.28); cursor: not-allowed; }
+    .slot.past { background: rgba(0,0,0,.02); cursor: default; border: 1px solid transparent; }
+    .slot.inactive { background: rgba(0,0,0,.02); border: 1px dashed rgba(0,0,0,.08); cursor: not-allowed; }
+    .slot.selected { background: #00694c !important; color: #fff !important; border: 1px solid #004d38 !important; cursor: pointer; }
+    .slot.selected .slot-lbl, .slot.selected .slot-lbl-end { color: #fff; }
+    /* Court header */
+    .courts-header { display: grid; gap: 3px; background: #f0f4f8; border-bottom: 1px solid rgba(0,0,0,.04); padding: 0 12px; }
+    .court-hdr { padding: 10px 4px; text-align: center; font-size: .78rem; font-weight: 700; color: #1e2b26; word-break: break-word; line-height: 1.3; }
+    .court-hdr.selected { background: #e8f5f0; color: #00694c; border-radius: 6px; }
+    .dark .courts-header { background: #1e2b26; }
+    .dark .court-hdr { color: #e8f5f0; }
+    .dark .court-hdr.selected { background: rgba(0,105,76,.2); color: #68dbae; }
+    .dark .slot.available { background: rgba(0,105,76,.12); color: #68dbae; }
+    .dark .slot-time { color: #bccac1; }
+    .dark .slot-time.half { color: #6d7a73; }
+    /* Step dots */
+    .step-dot {
+      width: 36px; height: 36px; border-radius: 50%; border: 2px solid #bccac1;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .82rem; font-weight: 800; color: #6d7a73;
+      background: white; transition: all .3s; flex-shrink: 0;
+    }
+    .step-dot.active { background: #00694c; color: #fff; border-color: #00694c; box-shadow: 0 4px 12px rgba(0,105,76,.3); }
+    .step-dot.done { background: #e8f5f0; color: #00694c; border-color: #00694c; }
+    .step-line { flex: 1; height: 2px; background: #bccac1; max-width: 64px; transition: background .3s; }
+    .step-line.done { background: #00694c; }
+    .dark .step-dot { background: #1e2b26; border-color: #3d4943; color: #6d7a73; }
+    .dark .step-dot.active { background: #00694c; border-color: #00694c; color: #fff; }
+    .dark .step-dot.done { background: rgba(0,105,76,.2); color: #68dbae; border-color: #00694c; }
+    /* Payment pills */
+    .pay-pill { flex: 1; padding: 16px 12px; border: 2px solid #bccac1; border-radius: 16px; text-align: center; cursor: pointer; transition: all .2s; background: white; min-height: 44px; }
+    .pay-pill:hover { border-color: #00694c; background: #e8f5f0; }
+    .pay-pill.active { border-color: #00694c; background: #e8f5f0; color: #00694c; }
+    .dark .pay-pill { background: #1e2b26; border-color: #3d4943; color: #c8d5d0; }
+    .dark .pay-pill:hover { border-color: #00694c; background: rgba(0,105,76,.15); }
+    .dark .pay-pill.active { border-color: #00694c; background: rgba(0,105,76,.15); color: #68dbae; }
+    .instapay-box {
+      border: 1px solid rgba(0,0,0,.06);
+      border-radius: 20px;
+      padding: 18px;
+      background: linear-gradient(180deg, rgba(232,245,240,.85), rgba(255,255,255,.96));
+    }
+    .instapay-qr {
+      width: min(100%, 290px);
+      aspect-ratio: 1 / 1;
+      object-fit: contain;
+      background: #fff;
+      border-radius: 22px;
+      border: 1px solid rgba(0,0,0,.06);
+      box-shadow: 0 16px 36px rgba(15,110,86,.10);
+      margin: 0 auto;
+      padding: 10px;
+      display: block;
+    }
+    .instapay-note {
+      border-radius: 16px;
+      padding: 12px 14px;
+      background: rgba(255,255,255,.8);
+      border: 1px dashed rgba(0,105,76,.22);
+    }
+    .dark .instapay-box {
+      background: linear-gradient(180deg, rgba(0,105,76,.18), rgba(30,43,38,.95));
+      border-color: rgba(255,255,255,.08);
+    }
+    .dark .instapay-note {
+      background: rgba(20,31,26,.8);
+      border-color: rgba(104,219,174,.22);
+    }
+    /* Toast */
+    .toast {
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(80px);
+      padding: 12px 24px; border-radius: 50px; font-weight: 700; font-size: .88rem;
+      color: #fff; z-index: 10000; transition: transform .3s ease; pointer-events: none; white-space: nowrap;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast.success { background: #00694c; }
+    .toast.error { background: #ba1a1a; }
+    /* Dark overrides */
+    .dark body { background: #101a15; }
+    .dark .glass { background: rgba(20,35,28,.82); }
+    .dark .upload-area { color: #c8d5d0; }
+    .dark .slot.available { border-color: rgba(104,219,174,.2); }
+    .dark .slot.booked {
+      background: rgba(220,38,38,.16);
+      color: #fca5a5;
+      border-color: rgba(248,113,113,.24);
+    }
+    /* Mobile booking layout */
+    .mobile-courts { display: none; }
+    .mobile-court-pill {
+      border: 1.5px solid rgba(0,105,76,.14);
+      background: rgba(255,255,255,.9);
+      color: #004d38;
+      border-radius: 999px;
+      padding: 10px 16px;
+      font-size: .82rem;
+      font-weight: 800;
+      white-space: nowrap;
+      transition: all .2s;
+    }
+    .mobile-court-pill.active {
+      background: #00694c;
+      color: #fff;
+      border-color: #00694c;
+      box-shadow: 0 10px 24px rgba(0,105,76,.18);
+    }
+    .dark .mobile-court-pill {
+      background: rgba(30,43,38,.85);
+      color: #c8d5d0;
+      border-color: rgba(104,219,174,.18);
+    }
+    .dark .mobile-court-pill.active {
+      background: #00694c;
+      color: #fff;
+      border-color: #00694c;
+    }
+    html[dir="ltr"] #profileDropdown { left: auto; right: 0; }
+    html[dir="ltr"] #confirm-details,
+    html[dir="ltr"] #sum-card,
+    html[dir="ltr"] #aside-summary,
+    html[dir="ltr"] #sel-info { text-align: left; }
+    html[dir="ltr"] .mr-auto { margin-right: 0 !important; margin-left: auto !important; }
+    @media (max-width: 767px) {
+      header .max-w-5xl,
+      #stepIndicator > div,
+      .relative.z-10.max-w-5xl {
+        max-width: 100%;
+      }
+      .grid-wrap {
+        max-height: 50vh;
+        padding-bottom: 12px;
+      }
+      @supports (height: 100dvh) {
+        .grid-wrap { max-height: 50dvh; }
+      }
+      .mobile-courts {
+        display: block;
+        padding: 0 16px 12px;
+      }
+      .mobile-courts-list {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding-bottom: 2px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+      .mobile-courts-list::-webkit-scrollbar {
+        display: none;
+      }
+      #dateBar {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+      #dateBar #day-label {
+        max-width: 65%;
+        line-height: 1.4;
+      }
+      #next-day-btn {
+        flex-shrink: 0;
+      }
+      #courts-hdr {
+        display: none;
+      }
+      .grid-wrap.px-3 {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+      #step-1 .sticky.bottom-0 .max-w-5xl {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      #sel-info {
+        width: 100%;
+        text-align: right;
+      }
+      #step-1 .sticky.bottom-0 .max-w-5xl > div:last-child {
+        width: 100%;
+      }
+      #step-1 .sticky.bottom-0 .max-w-5xl > div:last-child #price-badge {
+        flex: 1;
+        text-align: center;
+      }
+      #next-btn {
+        flex: 1;
+        justify-content: center;
+      }
+      #step-2 .grid {
+        gap: 16px;
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+      #sum-card,
+      #confirm-details {
+        border-radius: 20px;
+      }
+      #step-2 aside .bg-white,
+      #step-2 aside .dark\:bg-surface-dark,
+      #step-3 #confirm-details {
+        box-shadow: 0 14px 28px rgba(0,0,0,.06);
+      }
+      .pay-methods {
+        flex-direction: column;
+      }
+      .pay-pill {
+        width: 100%;
+      }
+      #step-3 .max-w-md {
+        max-width: 100%;
+      }
+    }
+    @media (max-width: 420px) {
+      .slot-time {
+        min-width: 42px;
+        font-size: .68rem;
+      }
+      .slot {
+        height: 42px;
+      }
+      .slot-lbl {
+        font-size: .66rem;
+      }
+      .slot-lbl-end {
+        font-size: .58rem;
+      }
+      #step-1 .sticky.bottom-0 .max-w-5xl > div:last-child {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      #price-badge,
+      #next-btn,
+      #submit-btn-mobile,
+      #back-btn {
+        width: 100%;
+      }
+      #step-3 .flex.gap-3.mb-3 {
+        flex-direction: column;
+      }
+      #step-3 #share-wa-btn,
+      #step-3 #book-again-btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body class="bg-surface dark:bg-[#101a15] font-taj min-h-screen text-[#1e2b26] dark:text-[#e0ebe6] transition-colors">
+<!-- Blobs -->
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+<div class="blob blob-3"></div>
+<!-- ═══ Loading ═══ -->
+<div id="loading" class="fixed inset-0 z-[9999] bg-white/90 dark:bg-[#101a15]/92 flex flex-col items-center justify-center gap-3">
+  <div class="w-11 h-11 border-[3.5px] border-surface-high dark:border-surface-dark border-t-primary rounded-full loading-spin"></div>
+  <p class="text-sm font-semibold text-outline">جاري تحميل المواعيد...</p>
+</div>
+<!-- ═══ Header ═══ -->
+<header class="sticky top-0 z-[500] glass border-b border-black/5 dark:border-white/5">
+  <div class="max-w-5xl mx-auto flex items-center justify-between px-4 py-2.5">
+    <a href="home.html" class="flex items-center gap-2.5 cursor-pointer">
+      <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center flex-shrink-0">
+        <span class="material-symbols-outlined text-white text-[1.1rem]">sports_tennis</span>
+      </div>
+      <div>
+        <div class="text-[1rem] font-black text-primary-dark dark:text-primary-fixed-dim leading-tight" id="club-name-hdr">بادل برو</div>
+        <div class="text-[.62rem] text-outline font-semibold leading-none">احجز ملعبك الآن</div>
+      </div>
+    </a>
+    <div class="flex items-center gap-2">
+      <div id="lang-toggle-host"></div>
+      <div class="relative">
+      <button id="headerAvatar" onclick="toggleProfileDropdown(event)"
+        class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primary-dark text-white font-black text-sm flex items-center justify-center ring-2 ring-white dark:ring-surface-dark shadow-md shadow-primary/20 hover:scale-105 transition-transform cursor-pointer">?</button>
+      <!-- Dropdown -->
+      <div id="profileDropdown" class="hidden absolute top-[calc(100%+8px)] left-0 w-56 glass rounded-2xl shadow-2xl border border-black/5 dark:border-white/10 p-2 z-[600]">
+        <div class="px-3 py-2.5 border-b border-black/5 dark:border-white/5 mb-1.5">
+          <span id="dropName" class="block font-extrabold text-sm">...</span>
+          <span id="dropEmail" class="text-[0.7rem] text-outline">...</span>
+        </div>
+        <button onclick="toggleDarkMode()" class="flex items-center gap-2.5 w-full px-3 py-2.5 rounded-xl text-sm font-bold hover:bg-primary-light dark:hover:bg-primary/10 transition-colors cursor-pointer">
+          <span class="material-symbols-outlined text-lg">dark_mode</span> الوضع الليلي
+          <div class="mr-auto w-9 h-5 rounded-full bg-outline-variant dark:bg-primary relative transition-colors">
+            <div class="absolute top-0.5 right-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform dark:-translate-x-4"></div>
+          </div>
+        </button>
+        <button onclick="window.location.href='home.html#profile'" class="flex items-center gap-2.5 w-full px-3 py-2.5 rounded-xl text-sm font-bold hover:bg-primary-light dark:hover:bg-primary/10 transition-colors cursor-pointer">
+          <span class="material-symbols-outlined text-lg">person</span> الملف الشخصي
+        </button>
+        <div class="h-px bg-black/5 dark:bg-white/5 my-1"></div>
+        <button id="logout-btn" class="flex items-center gap-2.5 w-full px-3 py-2.5 rounded-xl text-sm font-bold text-error hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors cursor-pointer">
+          <span class="material-symbols-outlined text-lg">logout</span> تسجيل الخروج
+        </button>
+      </div>
+      </div>
+    </div>
+  </div>
+</header>
+<!-- ═══ Step Indicator ═══ -->
+<div id="stepIndicator" class="glass border-b border-black/5 dark:border-white/5 relative z-10">
+  <div class="max-w-5xl mx-auto flex items-center justify-center gap-0 px-4 py-3">
+    <div id="sd-1" class="step-dot active">1</div>
+    <div id="sl-1" class="step-line mx-2"></div>
+    <div id="sd-2" class="step-dot">2</div>
+    <div id="sl-2" class="step-line mx-2"></div>
+    <div id="sd-3" class="step-dot">3</div>
+  </div>
+</div>
+<div class="relative z-10 max-w-5xl mx-auto pb-10">
+<!-- ══════════ STEP 1 ══════════ -->
+<div id="step-1" class="step-visible fade-up">
+  <!-- Date Bar -->
+  <div class="bg-white/80 dark:bg-surface-dark/80 backdrop-blur-sm border-b border-black/5 dark:border-white/5 px-4 py-3" id="dateBar">
+    <div class="flex items-center justify-between mb-2.5">
+      <span id="day-label" class="text-sm font-bold text-[#1e2b26] dark:text-[#e0ebe6]">—</span>
+      <button id="next-day-btn" class="flex items-center gap-1 text-xs font-bold text-primary px-3 py-1.5 rounded-full border border-primary/30 hover:bg-primary-light dark:hover:bg-primary/10 transition-colors cursor-pointer">
+        اليوم التالي <span class="material-symbols-outlined text-sm">navigate_before</span>
+      </button>
+    </div>
+    <!-- Week strip -->
+    <div id="week-strip" class="grid grid-cols-7 gap-1 text-center"></div>
+  </div>
+  <div id="mobile-courts" class="mobile-courts">
+    <div class="text-[0.78rem] font-extrabold text-outline mb-2">اختر الملعب</div>
+    <div id="mobile-courts-list" class="mobile-courts-list"></div>
+  </div>
+  <!-- Courts Header + Grid -->
+  <div class="bg-surface-low dark:bg-[#141f1a]">
+    <div id="courts-hdr" class="courts-header px-3"></div>
+    <div class="grid-wrap px-3 py-2">
+      <div id="slots-grid" class="slots-grid"></div>
+    </div>
+  </div>
+  <!-- Selection Bar -->
+  <div class="sticky bottom-0 z-10 glass border-t border-black/5 dark:border-white/5 shadow-[0_-4px_20px_rgba(0,0,0,0.06)]">
+    <div class="max-w-5xl mx-auto flex items-center justify-between gap-3 flex-wrap px-4 py-3">
+      <span id="sel-info" class="text-sm font-semibold text-outline flex-1 min-w-0">اختر الملعب والموعد المناسب</span>
+      <div class="flex items-center gap-2 flex-shrink-0">
+        <div id="price-badge" class="px-4 py-2 rounded-xl bg-primary-light dark:bg-primary/10 text-primary font-black text-sm border border-primary/20">—</div>
+        <button id="next-btn" disabled
+          class="flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-gradient-to-l from-primary to-primary-container text-white font-extrabold text-sm shadow-md shadow-primary/25 hover:shadow-lg hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all">
+          التالي <span class="material-symbols-outlined text-lg">navigate_before</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ══════════ STEP 2 ══════════ -->
+<div id="step-2" class="hidden">
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 px-4 pt-6">
+    <!-- Left: Form -->
+    <div class="lg:col-span-7 space-y-5">
+      <!-- Summary card -->
+      <div id="sum-card" class="bg-gradient-to-br from-[#0A2E1F] via-primary-dark to-primary rounded-2xl p-5 text-white shadow-xl shadow-primary/15"></div>
+      <!-- Customer Info -->
+      <div class="bg-white dark:bg-surface-dark rounded-2xl border border-black/5 dark:border-white/5 p-5 shadow-sm">
+        <h3 class="text-base font-black mb-4 flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary text-xl">person</span> بيانات الحجز
+        </h3>
+        <form id="booking-form" class="space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-outline mb-1.5">اسم العميل</label>
+              <input type="text" id="cust-name" readonly autocomplete="name"
+                class="w-full px-4 py-3 rounded-xl border-[1.5px] border-outline-variant/30 bg-gray-100 dark:bg-gray-800 text-outline text-sm font-semibold cursor-default">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-outline mb-1.5">رقم التليفون</label>
+              <input type="tel" id="cust-phone" readonly autocomplete="tel" inputmode="tel" dir="ltr" style="text-align:right"
+                class="w-full px-4 py-3 rounded-xl border-[1.5px] border-outline-variant/30 bg-gray-100 dark:bg-gray-800 text-outline text-sm font-semibold cursor-default">
+            </div>
+          </div>
+        </form>
+      </div>
+      <!-- Drinks -->
+      <div id="drinks-section" class="hidden bg-white dark:bg-surface-dark rounded-2xl border border-black/5 dark:border-white/5 p-5 shadow-sm">
+        <h3 class="text-base font-black mb-4 flex items-center gap-2">
+          <span class="material-symbols-outlined text-tertiary text-xl">local_cafe</span>
+          خدمات إضافية
+          <span class="text-xs text-outline font-semibold mr-auto">(اختياري)</span>
+        </h3>
+        <div id="drinks-list" class="flex flex-col gap-3"></div>
+      </div>
+      <!-- Payment Method -->
+      <div class="bg-white dark:bg-surface-dark rounded-2xl border border-black/5 dark:border-white/5 p-5 shadow-sm">
+        <h3 class="text-base font-black mb-4 flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary text-xl">payments</span> طريقة الدفع
+        </h3>
+        <div class="flex gap-3 pay-methods">
+          <div class="pay-pill active" data-method="club">
+            <div class="text-2xl mb-1.5">🏟️</div>
+            <div class="text-xs font-bold">الدفع عند الوصول</div>
+          </div>
+          <div class="pay-pill" data-method="instapay">
+            <div class="text-2xl mb-1.5">📱</div>
+            <div class="text-xs font-bold">الدفع عبر InstaPay</div>
+          </div>
+        </div>
+        <div id="instapay-group" class="hidden mt-4">
+          <div class="instapay-box">
+            <div class="text-center mb-4">
+              <div class="text-sm font-black text-primary mb-1">الدفع عبر InstaPay</div>
+              <div class="text-xs text-outline font-semibold">امسح الـ QR أو افتح رابط الدفع المباشر</div>
+            </div>
+            <a href="https://ipn.eg/S/YOUR_HANDLE/instapay/XXXXX" target="_blank" rel="noopener noreferrer" class="block">
+              <img src="insta_pay.png" alt="QR InstaPay" class="instapay-qr">
+            </a>
+            <div class="instapay-note mt-4 text-right">
+              <div class="text-xs font-bold text-outline mb-1">حساب الدفع</div>
+              <div class="text-sm font-black text-primary break-all">your-handle@instapay</div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+              <a href="https://ipn.eg/S/YOUR_HANDLE/instapay/XXXXX" target="_blank" rel="noopener noreferrer"
+                class="flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-gradient-to-l from-primary to-primary-container text-white font-extrabold text-sm shadow-md shadow-primary/25 hover:shadow-lg transition-all no-underline">
+                <span class="material-symbols-outlined text-lg">open_in_new</span>
+                ادفع عبر InstaPay
+              </a>
+              <button type="button" id="copy-instapay-btn"
+                class="flex items-center justify-center gap-2 px-4 py-3 rounded-2xl border-[1.5px] border-primary/20 bg-white/80 dark:bg-[#141f1a] text-primary font-extrabold text-sm hover:border-primary transition-colors cursor-pointer">
+                <span class="material-symbols-outlined text-lg">content_copy</span>
+                نسخ رابط الدفع
+              </button>
+            </div>
+            <p class="text-[0.72rem] text-outline font-semibold mt-4 text-center">
+              بعد التحويل اضغط إرسال طلب الحجز، ثم أرسل تفاصيل الدفع عبر واتساب للإدارة.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Right: Sticky Summary (desktop) -->
+    <aside class="lg:col-span-5 lg:sticky lg:top-[120px] h-fit">
+      <div class="bg-white dark:bg-surface-dark rounded-2xl border border-black/5 dark:border-white/5 p-5 shadow-lg">
+        <h3 class="text-base font-black mb-4 flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary text-xl">receipt_long</span> ملخص الحجز
+        </h3>
+        <div id="aside-summary" class="space-y-2.5 text-sm"></div>
+        <div class="mt-4 pt-4 border-t border-black/5 dark:border-white/5 flex items-center justify-between">
+          <span class="font-black text-base">الإجمالي</span>
+          <div id="aside-total" class="text-2xl font-black text-primary">—</div>
+        </div>
+        <button id="submit-btn"
+          class="hidden lg:block w-full mt-5 py-4 rounded-2xl bg-gradient-to-l from-primary to-primary-container text-white font-extrabold text-base shadow-lg shadow-primary/25 hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer">
+          إرسال طلب الحجز
+        </button>
+        <p class="hidden lg:block text-center text-xs text-outline/70 mt-3">سيصل طلبك إلى الإدارة للمراجعة والتأكيد</p>
+      </div>
+    </aside>
+  </div>
+  <!-- Footer Bar (mobile submit) -->
+  <div class="lg:hidden sticky bottom-0 z-10 glass border-t border-black/5 dark:border-white/5 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] px-4 py-3 flex items-center gap-3">
+    <button id="back-btn" class="flex items-center gap-1.5 px-4 py-3 rounded-xl border-[1.5px] border-outline-variant dark:border-[#3d4943] font-bold text-sm text-outline hover:bg-surface-low dark:hover:bg-surface-dark transition-colors cursor-pointer">
+      <span class="material-symbols-outlined text-lg">navigate_next</span> العودة
+    </button>
+    <button id="submit-btn-mobile"
+      class="flex-1 py-3 rounded-xl bg-gradient-to-l from-primary to-primary-container text-white font-extrabold text-sm shadow-md shadow-primary/25 hover:shadow-lg transition-all cursor-pointer">
+      إرسال طلب الحجز
+    </button>
+  </div>
+</div>
+<!-- ══════════ STEP 3 ══════════ -->
+<div id="step-3" class="hidden">
+  <div class="max-w-md mx-auto px-4 pt-10 pb-8 text-center fade-up">
+    <!-- Success Icon -->
+    <div class="w-24 h-24 rounded-full bg-primary-light dark:bg-primary/10 flex items-center justify-center mx-auto mb-6">
+      <span class="material-symbols-outlined icon-fill text-primary text-5xl">check_circle</span>
+    </div>
+    <h2 class="text-2xl font-black text-primary mb-2">تم استلام طلب الحجز</h2>
+    <p class="text-sm text-outline mb-8">تم إرسال الطلب بنجاح وسيتم مراجعته من الإدارة</p>
+    <!-- Confirmation Details -->
+    <div id="confirm-details" class="bg-white dark:bg-surface-dark rounded-2xl border border-black/5 dark:border-white/5 p-5 text-right mb-6 shadow-sm space-y-0"></div>
+    <!-- Actions -->
+    <div class="flex gap-3 mb-3">
+      <button id="book-again-btn"
+        class="flex-1 py-3.5 rounded-xl bg-gradient-to-l from-primary to-primary-container text-white font-extrabold text-sm shadow-md shadow-primary/20 hover:shadow-lg hover:-translate-y-0.5 transition-all cursor-pointer">
+        حجز جديد
+      </button>
+      <button id="share-wa-btn"
+        class="flex items-center gap-2 px-4 py-3.5 rounded-xl border-2 border-[#25D366] text-[#25D366] font-extrabold text-sm hover:bg-[#25D366] hover:text-white transition-all cursor-pointer flex-shrink-0">
+        <span class="material-symbols-outlined text-lg">share</span>
+        إرسال تفاصيل الدفع
+      </button>
+    </div>
+    <a href="home.html" class="flex items-center justify-center gap-2 w-full py-3 rounded-xl border-[1.5px] border-outline-variant dark:border-[#3d4943] text-sm font-bold text-outline hover:bg-surface-low dark:hover:bg-surface-dark transition-colors no-underline">
+      <span class="material-symbols-outlined text-lg">home</span> الرجوع للرئيسية
+    </a>
+  </div>
+</div>
+</div><!-- /page-wrap -->
+<!-- Toast -->
+<div id="toast" class="toast"></div>
+<!-- Firebase SDKs -->
+<script src="i18n.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<!-- EmailJS -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+/* ═══════════════════════════════════════
+   PUBLIC BOOKING PAGE — Padel Pro
+   ═══════════════════════════════════════ */
+// ─── Firebase Init ───
+const firebaseConfig = {
+  apiKey: "YOUR_FIREBASE_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT.firebasestorage.app",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db   = firebase.firestore();
+const CUSTOMER_LOGOUT_FLAG = 'pp_customer_logged_out';
+emailjs.init('AbhgvKJWTG3qcX5Cy');
+const INSTAPAY_URL = 'https://ipn.eg/S/YOUR_HANDLE/instapay/XXXXX';
+const PAYMENT_NOTIFY_NUMBER = 'YOUR_WHATSAPP_NUMBER';
+const normalizeCustomerName = (...candidates) => {
+  for (const candidate of candidates) {
+    if (typeof candidate !== 'string') continue;
+    const value = candidate.trim();
+    if (value) return value;
+  }
+  return '';
+};
+async function syncCustomerName(user, profileName) {
+  const resolvedName = normalizeCustomerName(profileName, user?.displayName);
+  if (!user || !resolvedName) return resolvedName;
+  const tasks = [];
+  if (user.displayName !== resolvedName) {
+    tasks.push(user.updateProfile({ displayName: resolvedName }).catch(err => console.warn('Failed to sync auth display name:', err)));
+  }
+  tasks.push(
+    db.collection('customers_users').doc(user.uid).set(
+      { name: resolvedName, updatedAt: firebase.firestore.FieldValue.serverTimestamp() },
+      { merge: true }
+    ).catch(err => console.warn('Failed to sync Firestore name:', err))
+  );
+  await Promise.all(tasks);
+  return resolvedName;
+}
+// ─── Auth Guard ───
+let _currentUser = null;
+let _customerProfile = null;
+let _publicBookingsUnsub = null;
+let _courtBlocksUnsub = null;
+let _drinksUnsub = null;
+auth.onAuthStateChanged(async user => {
+  if (!user) { window.location.href = 'index.html'; return; }
+  _currentUser = user;
+  try {
+    const doc = await db.collection('customers_users').doc(user.uid).get();
+    if (doc.exists) {
+      _customerProfile = doc.data();
+      if (!_customerProfile.email && user.email && !user.email.endsWith('@customer-padel.com')) _customerProfile.email = user.email;
+    } else {
+      let phone = '';
+      if (user.email && user.email.endsWith('@customer-padel.com')) {
+        const raw = user.email.split('@')[0];
+        phone = raw.startsWith('+') ? raw : '+' + raw;
+      }
+      _customerProfile = {
+        name: normalizeCustomerName(user.displayName),
+        phone: phone,
+        email: (user.email && !user.email.endsWith('@customer-padel.com')) ? user.email : ''
+      };
+    }
+  } catch(e) {
+    _customerProfile = { name: '', phone: '', email: user.email };
+  }
+  const resolvedName = normalizeCustomerName(_customerProfile?.name, user.displayName);
+  if (resolvedName) {
+    if (_customerProfile.name !== resolvedName) {
+      _customerProfile.name = await syncCustomerName(user, resolvedName);
+    } else {
+      _customerProfile.name = resolvedName;
+    }
+  }
+  const name = _customerProfile.name || window.cbTx('المستخدم', 'User');
+  const initial = (name || 'U').charAt(0).toUpperCase();
+
+  const headerAvatar = document.getElementById('headerAvatar');
+  if(headerAvatar) headerAvatar.textContent = initial;
+  const dropName = document.getElementById('dropName');
+  if(dropName) dropName.textContent = name;
+  const dropEmail = document.getElementById('dropEmail');
+  if(dropEmail) dropEmail.textContent = _customerProfile.email || '';
+  const custName = document.getElementById('cust-name');
+  if(custName) custName.value = _customerProfile.name || '';
+  const custPhone = document.getElementById('cust-phone');
+  if(custPhone) custPhone.value = _customerProfile.phone || '';
+  loadData();
+});
+// ═══ Profile Dropdown ═══
+const profileDropdown = document.getElementById('profileDropdown');
+function toggleProfileDropdown(e) { e.stopPropagation(); profileDropdown.classList.toggle('hidden'); }
+document.addEventListener('click', () => profileDropdown && profileDropdown.classList.add('hidden'));
+profileDropdown.addEventListener('click', e => e.stopPropagation());
+function toggleDarkMode() {
+  const isDark = document.documentElement.classList.toggle('dark');
+  document.body.classList.toggle('dark', isDark);
+  localStorage.setItem('pp_dark', isDark);
+}
+if (localStorage.getItem('pp_dark') === 'true') {
+  document.documentElement.classList.add('dark');
+  document.body.classList.add('dark');
+}
+// ─── Data ───
+let _courts = [], _settings = {}, _bookings = [], _courtBlocks = [];
+// ─── State ───
+let _dayOff = 0, _court = null, _date = null, _selectedSlots = new Set();
+let _payMethod = 'club', _currentStep = 1, _skipScroll = false, _mobileCourt = null;
+let _drinks = [], _selectedDrinks = {};
+// ─── Utilities ───
+function generateId(p) { return p + '-' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2,5).toUpperCase(); }
+function formatBookingRef(num) {
+  const parsed = Number(num);
+  if (!Number.isFinite(parsed) || parsed <= 0) return '#----';
+  return `#${String(Math.trunc(parsed)).padStart(4,'0')}`;
+}
+async function reserveBookingNumbers(count = 1) {
+  const total = Math.max(1, Number(count || 1));
+  const ref = db.collection('booking_meta').doc('sequence');
+  return db.runTransaction(async tx => {
+    const snap = await tx.get(ref);
+    const current = snap.exists ? Math.max(0, Number(snap.data()?.lastValue || 0)) : 0;
+    const start = current + 1;
+    const end = current + total;
+    tx.set(ref, {
+      lastValue: end,
+      updatedAt: new Date().toISOString()
+    }, { merge: true });
+    return Array.from({ length: total }, (_, idx) => start + idx);
+  });
+}
+function getBookingRef(booking) {
+  if (booking?.bookingNum) return formatBookingRef(booking.bookingNum);
+  const numericRef = String(booking?.bookingRef || '').trim().match(/^#?(\d{1,10})$/);
+  if (numericRef) return formatBookingRef(Number(numericRef[1]));
+  return '#----';
+}
+function formatCurrency(a) { return window.cbFormatCurrency ? window.cbFormatCurrency(a) : (a||0).toLocaleString('en-US') + ' ج.م'; }
+const tx = (ar, en) => window.cbTx ? window.cbTx(ar, en) : ar;
+const displayLiteral = value => window.cbTranslateLiteral ? window.cbTranslateLiteral(String(value || '')) : String(value || '');
+const displayCourtName = value => {
+  const fallback = tx('ملعب', 'Court');
+  return window.cbCourtName ? window.cbCourtName(value || fallback) : (value || fallback);
+};
+function todayISO() { return new Date().toISOString().slice(0,10); }
+function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function calcEndTime(st, dur) {
+  if (!st) return '';
+  const [h,m] = st.split(':').map(Number);
+  const t = h*60+m+dur*60;
+  return String(Math.floor(t/60)%24).padStart(2,'0')+':'+String(t%60).padStart(2,'0');
+}
+function getAllTimeSlots() {
+  const start = _settings.workingHoursStart || '08:00';
+  const end = _settings.workingHoursEnd || '23:59';
+  let [sh] = start.split(':').map(Number);
+  let [eh] = end.split(':').map(Number);
+  if (eh <= sh) { eh = end === '00:00' ? 24 : eh + 24; }
+  const slots = [];
+  for (let h = sh; h < eh; h++) { const dh = h%24; slots.push(String(dh).padStart(2,'0')+':00'); slots.push(String(dh).padStart(2,'0')+':30'); }
+  return slots;
+}
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast ' + type + ' show';
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+// Safety: hide loading after 8 seconds max
+setTimeout(() => { const l = document.getElementById('loading'); if (l && !l.classList.contains('hidden')) l.classList.add('hidden'); }, 8000);
+window.applyCustomerPageLanguage = function applyCustomerPageLanguage() {
+  renderWeekStrip();
+  renderGrid();
+  if (_currentStep >= 2) renderSummary();
+  window.cbTranslateCustomerStatic?.(document.body);
+};
+window.cbInitLanguage({
+  toggleHostSelector: '#lang-toggle-host',
+  pageTitles: { ar: 'بادل برو — احجز ملعبك', en: 'Padel Pro — Book your court' }
+});
+// ─── Step Indicator ───
+function updateStepIndicator(step) {
+  for (let i = 1; i <= 3; i++) {
+    const dot = document.getElementById('sd-' + i);
+    dot.classList.remove('active', 'done');
+    if (i === step) dot.classList.add('active');
+    else if (i < step) dot.classList.add('done');
+  }
+  for (let i = 1; i <= 2; i++) {
+    document.getElementById('sl-' + i).classList.toggle('done', i < step);
+  }
+}
+// ─── Data Loading ───
+async function loadData() {
+  try {
+    const [cs, ss, bs, bls, ds] = await Promise.all([
+      db.collection('courts').get(), db.collection('settings').doc('app').get(),
+      db.collection('public_bookings').get(), db.collection('courtBlocks').get(),
+      db.collection('drinks').get()
+    ]);
+    _courts = cs.docs.map(d => ({id: d.id, ...d.data()})).filter(c => c.status === 'active');
+    _settings = ss.exists ? ss.data() : {};
+    _bookings = bs.docs.map(d => d.data());
+    _courtBlocks = bls.docs.map(d => d.data());
+    _drinks = ds.docs.map(d => ({id: d.id, ...d.data()})).filter(d => d.available !== false);
+    if (_settings.clubName) document.getElementById('club-name-hdr').textContent = _settings.clubName;
+    const params = new URLSearchParams(window.location.search);
+    const urlCourtId = params.get('courtId');
+    if (urlCourtId && _courts.some(c => c.id === urlCourtId)) _court = urlCourtId;
+    startListeners();
+    renderGrid();
+    renderDrinksForm();
+    document.getElementById('loading').classList.add('hidden');
+  } catch(e) {
+    console.error('Load error:', e);
+    setTimeout(() => document.getElementById('loading').classList.add('hidden'), 2000);
+  }
+}
+function startListeners() {
+  if (_publicBookingsUnsub) _publicBookingsUnsub();
+  if (_courtBlocksUnsub) _courtBlocksUnsub();
+  if (_drinksUnsub) _drinksUnsub();
+  _publicBookingsUnsub = db.collection('public_bookings').onSnapshot(snap => {
+    _bookings = snap.docs.map(d => d.data());
+    if (_currentStep === 1) renderGrid();
+  });
+  _courtBlocksUnsub = db.collection('courtBlocks').onSnapshot(snap => {
+    _courtBlocks = snap.docs.map(d => d.data());
+    if (_currentStep === 1) renderGrid();
+  });
+  _drinksUnsub = db.collection('drinks').onSnapshot(snap => {
+    _drinks = snap.docs.map(d => ({id: d.id, ...d.data()}));
+    renderDrinksForm();
+  });
+}
+// ─── Pricing ───
+function isPeak(time, date) {
+  if (!_settings.peakHoursStart || !_settings.peakMultiplier) return false;
+  const pd = _settings.peakDays || [];
+  if (pd.length && !pd.includes(new Date(date+'T12:00:00').getDay())) return false;
+  return time >= _settings.peakHoursStart && time < (_settings.peakHoursEnd || '23:59');
+}
+function calcSlotPrice(court, arr, date) {
+  const base = court?.pricePerHour || 0;
+  const mult = parseFloat(_settings.peakMultiplier) || 1;
+  return Math.round(arr.reduce((s,t) => s + (base * 0.5 * ((_settings.peakHoursStart && isPeak(t,date)) ? mult : 1)), 0));
+}
+// ─── Ranges ───
+function getRanges() {
+  if (!_court || _selectedSlots.size === 0) return [];
+  const slots = getAllTimeSlots();
+  const court = _courts.find(c => c.id === _court);
+  const date = _date || todayISO();
+  const sel = slots.filter(t => _selectedSlots.has(t));
+  if (!sel.length) return [];
+  const ranges = [];
+  let rS = sel[0], rE = sel[0];
+  for (let i = 1; i < sel.length; i++) {
+    if (slots.indexOf(sel[i]) === slots.indexOf(sel[i-1]) + 1) { rE = sel[i]; }
+    else {
+      const rs = slots.slice(slots.indexOf(rS), slots.indexOf(rE)+1);
+      ranges.push({ time: rS, endTime: calcEndTime(rE,.5), dur: rs.length*.5, price: calcSlotPrice(court,rs,date) });
+      rS = sel[i]; rE = sel[i];
+    }
+  }
+  const rs = slots.slice(slots.indexOf(rS), slots.indexOf(rE)+1);
+  ranges.push({ time: rS, endTime: calcEndTime(rE,.5), dur: rs.length*.5, price: calcSlotPrice(court,rs,date) });
+  return ranges;
+}
+function slotCovered(b, time) {
+  const slots = getAllTimeSlots();
+  const si = slots.indexOf(b.startTime);
+  const count = Math.round((b.duration||1)*2);
+  return slots.indexOf(time) >= si && slots.indexOf(time) < si + count;
+}
+function isBlocked(cId, date, time) {
+  return _courtBlocks.some(b => b.courtId===cId && b.date===date && time>=b.startTime && time<b.endTime);
+}
+// ─── Week Strip ───
+function renderWeekStrip() {
+  const strip = document.getElementById('week-strip');
+  let html = '';
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(); d.setDate(d.getDate()+i);
+    const isActive = i === _dayOff;
+    const isToday = i === 0;
+    html += `<div class="bk-week-day flex flex-col items-center gap-0.5 py-1.5 px-1 rounded-xl cursor-pointer transition-all${isActive ? ' bg-primary text-white' : ' hover:bg-surface-low dark:hover:bg-surface-dark'}" data-off="${i}">
+      <span class="text-[.6rem] font-semibold${isActive ? ' text-white/80' : ' text-outline'}">${window.cbFormatDate ? window.cbFormatDate(d,{weekday:'short'}) : d.toLocaleDateString(undefined,{weekday:'short'})}</span>
+      <span class="text-[.85rem] font-black w-7 h-7 flex items-center justify-center rounded-full${isActive ? ' text-white' : isToday ? ' bg-primary-light text-primary' : ''}">${d.getDate()}</span>
+    </div>`;
+  }
+  strip.innerHTML = html;
+  window.cbTranslateCustomerStatic?.(strip);
+}
+// ─── Render Grid ───
+function renderGrid() {
+  if (_dayOff < 0) _dayOff = 0;
+  const d = new Date(); d.setDate(d.getDate()+_dayOff);
+  const date = d.toISOString().slice(0,10);
+  if (!_date) _date = date;
+  document.getElementById('day-label').textContent = window.cbFormatDate
+    ? window.cbFormatDate(d,{weekday:'long',year:'numeric',month:'long',day:'numeric'})
+    : d.toLocaleDateString(undefined,{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  renderWeekStrip();
+  const grid = document.getElementById('slots-grid');
+  const hdr = document.getElementById('courts-hdr');
+  const mobileWrap = document.getElementById('mobile-courts');
+  const mobileList = document.getElementById('mobile-courts-list');
+  const isMobile = window.innerWidth <= 767;
+  const allCourts = _courts;
+  const selectedCourtId = _court || _mobileCourt || allCourts[0]?.id || null;
+  if (!_mobileCourt && allCourts[0]) _mobileCourt = selectedCourtId;
+  if (!_court && selectedCourtId) _mobileCourt = selectedCourtId;
+  if (mobileWrap) mobileWrap.style.display = isMobile ? 'block' : 'none';
+  if (mobileList) {
+    mobileList.innerHTML = allCourts.map(c => `<button type="button" class="mobile-court-pill${c.id===selectedCourtId?' active':''}" data-court-pill="${esc(c.id)}">${esc(displayCourtName(c.name))}</button>`).join('');
+  }
+  const courts = isMobile
+    ? allCourts.filter(c => c.id === selectedCourtId).slice(0, 1)
+    : allCourts;
+  const now = new Date(), ts = getAllTimeSlots();
+  const timeColWidth = isMobile ? 48 : 54;
+  const col = `${timeColWidth}px repeat(${courts.length},1fr)`;
+  grid.style.gridTemplateColumns = col;
+  grid.style.minWidth = isMobile ? '100%' : `${54+courts.length*100}px`;
+  hdr.style.gridTemplateColumns = col;
+  hdr.style.minWidth = grid.style.minWidth;
+  let h = '<div></div>';
+  courts.forEach(c => { h += `<div class="court-hdr${c.id===_court?' selected':''}">${esc(displayCourtName(c.name))}</div>`; });
+  hdr.innerHTML = h;
+  let html = '';
+  ts.forEach(time => {
+    html += `<div class="slot-time${time.endsWith(':00')?'':' half'}">${time}</div>`;
+    const se = calcEndTime(time,.5);
+    courts.forEach(c => {
+      const bk = _bookings.find(b => b.courtId===c.id && b.date===date && b.status!=='cancelled' && slotCovered(b,time));
+      const inSel = _court===c.id && _selectedSlots.has(time);
+      const bl = isBlocked(c.id,date,time);
+      if (bk) {
+        html += `<div class="slot booked" title="${window.cbTx('محجوز', 'Booked')}"><span class="slot-booked-mark">-</span></div>`;
+      } else if (bl) {
+        html += `<div class="slot blocked"></div>`;
+      } else if (inSel) {
+        html += `<div class="slot selected" data-c="${c.id}" data-t="${time}" data-d="${date}"><span class="slot-lbl">${time}<br><span class="slot-lbl-end">${se}</span></span></div>`;
+      } else {
+        const past = new Date(`${date}T${time}`) < now;
+        html += past ? `<div class="slot past"></div>` :
+          `<div class="slot available" data-c="${c.id}" data-t="${time}" data-d="${date}"><span class="slot-lbl">${time}<br><span class="slot-lbl-end">${se}</span></span></div>`;
+      }
+    });
+  });
+  grid.innerHTML = html;
+  window.cbTranslateCustomerStatic?.(hdr);
+  window.cbTranslateCustomerStatic?.(grid);
+  if (!_skipScroll) {
+    const wrap = document.querySelector('.grid-wrap');
+    if (wrap) { const idx = Math.max(0,(now.getHours()-8)*2); wrap.scrollTop = idx*41; }
+  }
+  _skipScroll = false;
+  updateBar();
+}
+function updateBar() {
+  const info = document.getElementById('sel-info'), price = document.getElementById('price-badge'), btn = document.getElementById('next-btn');
+  if (!_court || _selectedSlots.size===0) { info.innerHTML=window.cbTx('اختر الملعب والموعد المناسب', 'Choose the right court and time'); price.textContent='—'; btn.disabled=true; return; }
+  const ranges = getRanges(), court = _courts.find(c=>c.id===_court);
+  const courtTotal = ranges.reduce((s,r)=>s+r.price,0);
+  let drinksTotal = 0;
+  Object.keys(_selectedDrinks).forEach(id => {
+    const d = _drinks.find(dr => dr.id === id);
+    if (d) drinksTotal += (d.price || 0) * _selectedDrinks[id];
+  });
+  const total = courtTotal + drinksTotal;
+  const mins = _selectedSlots.size*30;
+  const dur = window.cbLang && window.cbLang() === 'en'
+    ? (mins < 60 ? `${mins} min` : mins % 60 === 0 ? `${mins/60} hr` : `${Math.floor(mins/60)} hr ${mins%60} min`)
+    : (mins < 60 ? `${mins} دقيقة` : mins % 60 === 0 ? `${mins/60} ساعة` : `${Math.floor(mins/60)}س ${mins%60}د`);
+  const rt = ranges.length===1 ? `${ranges[0].time} – ${ranges[0].endTime}` : window.cbTx(`${ranges.length} فترات`, `${ranges.length} slots`);
+  info.innerHTML = `<strong>${esc(displayCourtName(court?.name || tx('ملعب', 'Court')))}</strong> &nbsp;•&nbsp; ${rt} &nbsp;(${dur})`;
+  price.textContent = formatCurrency(total); btn.disabled = false;
+}
+function renderDrinksForm() {
+  const container = document.getElementById('drinks-list');
+  if (!container) return;
+  const drinksSec = document.getElementById('drinks-section');
+  if (drinksSec) {
+    if (_drinks.length === 0) {
+      drinksSec.classList.add('hidden');
+      return;
+    }
+    drinksSec.classList.remove('hidden');
+  }
+  container.innerHTML = _drinks.map(d => {
+    const qty = _selectedDrinks[d.id] || 0;
+    return `
+    <div class="flex items-center justify-between p-3.5 rounded-xl bg-surface-low dark:bg-[#141f1a] hover:shadow-sm transition-shadow">
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 rounded-full bg-tertiary-fixed/40 flex items-center justify-center text-xl flex-shrink-0">${d.emoji || '🥤'}</div>
+        <div>
+          <div class="text-sm font-bold">${esc(displayLiteral(d.name))}</div>
+          <div class="text-xs font-extrabold text-primary mt-0.5">${formatCurrency(d.price)}</div>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <button type="button" class="btn-qty minus w-8 h-8 rounded-full bg-surface-high dark:bg-[#2a3d34] flex items-center justify-center font-black text-lg text-outline hover:border hover:border-primary hover:text-primary transition-all cursor-pointer" data-id="${d.id}">−</button>
+        <span class="qty-val font-black text-sm min-w-[20px] text-center" id="qty-${d.id}">${qty}</span>
+        <button type="button" class="btn-qty plus w-8 h-8 rounded-full bg-secondary-container/60 dark:bg-primary/15 flex items-center justify-center font-black text-lg text-primary hover:bg-primary hover:text-white transition-all cursor-pointer" data-id="${d.id}">+</button>
+      </div>
+    </div>`;
+  }).join('') + `<div id="drinks-total-row" class="hidden items-center justify-between pt-2 border-t border-black/5 dark:border-white/5 text-sm font-extrabold text-primary">
+    <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">local_cafe</span> ${tx('إجمالي المشروبات', 'Drinks total')}</span>
+    <span id="drinks-total-val">${formatCurrency(0)}</span>
+  </div>`;
+  window.cbTranslateCustomerStatic?.(container);
+  container.querySelectorAll('.btn-qty').forEach(btn => {
+    btn.onclick = () => {
+      const id = btn.dataset.id;
+      const isPlus = btn.classList.contains('plus');
+      let q = _selectedDrinks[id] || 0;
+      if (isPlus) q++; else if (q > 0) q--;
+      if (q === 0) delete _selectedDrinks[id]; else _selectedDrinks[id] = q;
+      document.getElementById(`qty-${id}`).textContent = q;
+      let dt = 0;
+      Object.keys(_selectedDrinks).forEach(did => {
+        const dr = _drinks.find(x => x.id === did);
+        if (dr) dt += (dr.price || 0) * _selectedDrinks[did];
+      });
+      const totalRow = document.getElementById('drinks-total-row');
+      const totalVal = document.getElementById('drinks-total-val');
+      if (totalRow && totalVal) {
+        totalRow.style.display = dt > 0 ? 'flex' : 'none';
+        totalVal.textContent = formatCurrency(dt);
+      }
+      updateBar();
+      if (_currentStep === 2) renderSummary();
+    };
+  });
+}
+function renderSummary() {
+  const ranges = getRanges(), court = _courts.find(c=>c.id===_court);
+  const d = new Date(_date), ds = window.cbFormatDate
+    ? window.cbFormatDate(d,{weekday:'long',year:'numeric',month:'short',day:'numeric'})
+    : d.toLocaleDateString(undefined,{weekday:'long',year:'numeric',month:'short',day:'numeric'});
+  const courtTotal = ranges.reduce((s,r)=>s+r.price,0);
+  let drinksTotal = 0, drinksSummary = [];
+  Object.keys(_selectedDrinks).forEach(id => {
+    const dr = _drinks.find(d => d.id === id);
+    if (dr) { const q = _selectedDrinks[id]; drinksTotal += dr.price * q; drinksSummary.push(`${displayLiteral(dr.name)} (x${q})`); }
+  });
+  const total = courtTotal + drinksTotal;
+  const ts = ranges.length===1 ? `${ranges[0].time} – ${ranges[0].endTime}` : ranges.map(r=>`${r.time}–${r.endTime}`).join(window.cbLang && window.cbLang() === 'en' ? ', ' : ' ، ');
+  // Summary card (top)
+  document.getElementById('sum-card').innerHTML = `
+    <div class="flex flex-wrap gap-3">
+      <div class="flex-1 min-w-[80px]">
+        <div class="text-[.65rem] text-white/55 font-bold uppercase tracking-wider mb-1">${tx('الملعب', 'Court')}</div>
+        <div class="text-sm font-bold text-white">${esc(displayCourtName(court?.name || '—'))}</div>
+      </div>
+      <div class="flex-1 min-w-[80px]">
+        <div class="text-[.65rem] text-white/55 font-bold uppercase tracking-wider mb-1">${tx('التاريخ', 'Date')}</div>
+        <div class="text-sm font-bold text-white">${ds}</div>
+      </div>
+      <div class="flex-[100%]">
+        <div class="text-[.65rem] text-white/55 font-bold uppercase tracking-wider mb-1">${tx('الوقت', 'Time')}</div>
+        <div class="text-sm font-bold text-white">${ts}</div>
+      </div>
+      ${drinksSummary.length ? `<div class="flex-[100%] pt-2 border-t border-white/10"><div class="text-[.65rem] text-white/55 font-bold uppercase tracking-wider mb-1">${tx('المشروبات', 'Drinks')}</div><div class="text-sm font-bold text-white">${esc(drinksSummary.join(window.cbLang && window.cbLang() === 'en' ? ', ' : ' ، '))}</div></div>` : ''}
+    </div>
+    <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between">
+      <span class="text-sm text-white/60 font-semibold">${tx('الإجمالي', 'Total')}</span>
+      <span class="text-2xl font-black text-[#68dbae]">${formatCurrency(total)}</span>
+    </div>`;
+  window.cbTranslateCustomerStatic?.(document.getElementById('sum-card'));
+  // Aside summary
+  const aside = document.getElementById('aside-summary');
+  if (aside) {
+    aside.innerHTML = `
+      <div class="flex justify-between text-outline text-sm"><span>${tx('الملعب', 'Court')}</span><span class="font-bold text-[#1e2b26] dark:text-[#e0ebe6]">${esc(displayCourtName(court?.name || '—'))}</span></div>
+      <div class="flex justify-between text-outline text-sm"><span>${tx('التاريخ', 'Date')}</span><span class="font-bold text-[#1e2b26] dark:text-[#e0ebe6]">${ds}</span></div>
+      <div class="flex justify-between text-outline text-sm"><span>${tx('الوقت', 'Time')}</span><span class="font-bold text-[#1e2b26] dark:text-[#e0ebe6]">${ts}</span></div>
+      <div class="flex justify-between text-outline text-sm"><span>${tx('سعر الملعب', 'Court price')}</span><span class="font-bold text-[#1e2b26] dark:text-[#e0ebe6]">${formatCurrency(courtTotal)}</span></div>
+      ${drinksTotal > 0 ? `<div class="flex justify-between text-outline text-sm"><span>${tx('المشروبات', 'Drinks')}</span><span class="font-bold text-[#1e2b26] dark:text-[#e0ebe6]">${formatCurrency(drinksTotal)}</span></div>` : ''}
+    `;
+    document.getElementById('aside-total').textContent = formatCurrency(total);
+    window.cbTranslateCustomerStatic?.(aside);
+  }
+}
+function goStep(n) {
+  _currentStep = n;
+  ['step-1','step-2','step-3'].forEach(id => {
+    const el = document.getElementById(id);
+    el.classList.add('hidden');
+    el.classList.remove('step-visible');
+  });
+  const target = document.getElementById('step-'+n);
+  target.classList.remove('hidden');
+  target.classList.add('step-visible','fade-up');
+  updateStepIndicator(n);
+  window.scrollTo({top:0,behavior:'smooth'});
+  if (n===2) renderSummary();
+}
+// ─── Submit ───
+async function submitBooking() {
+  const name = document.getElementById('cust-name').value.trim();
+  const phone = document.getElementById('cust-phone').value.trim();
+  if (!name || !phone) { showToast(window.cbTx('البيانات غير مكتملة', 'Your details are incomplete'),'error'); return; }
+  const btn = document.getElementById('submit-btn');
+  const btnM = document.getElementById('submit-btn-mobile');
+  [btn, btnM].forEach(b => { if(b){b.disabled=true;b.textContent=window.cbTx('جاري الحفظ...', 'Saving...')} });
+  let receiptUrl = null;
+  const court = _courts.find(c=>c.id===_court);
+  const ranges = getRanges();
+  const courtTotalPrice = ranges.reduce((s,r)=>s+r.price,0);
+  let drinksList = [], drinksTotal = 0;
+  Object.keys(_selectedDrinks).forEach(id => {
+    const dr = _drinks.find(d => d.id === id);
+    if (dr) { drinksList.push({ id, name: dr.name, price: dr.price, quantity: _selectedDrinks[id] }); drinksTotal += dr.price * _selectedDrinks[id]; }
+  });
+  const totalPrice = courtTotalPrice + drinksTotal;
+  let confirmData = null;
+  try {
+    const reservedBookingNums = await reserveBookingNumbers(ranges.length);
+    for (let i = 0; i < ranges.length; i++) {
+      const range = ranges[i], isFirst = i === 0;
+      const bookingId = generateId('BK');
+      const bookingNum = reservedBookingNums[i];
+      const booking = {
+        id: bookingId,
+        bookingNum,
+        bookingRef: getBookingRef({ bookingNum }),
+        customerName: name, phone,
+        courtId: _court, courtName: court?.name||_court,
+        date: _date, startTime: range.time, endTime: range.endTime,
+        duration: range.dur, price: range.price,
+        totalPrice: isFirst ? totalPrice : range.price,
+        drinks: isFirst ? drinksList : [],
+        status: 'pending', paymentStatus: 'unpaid',
+        paymentMethod: _payMethod==='instapay'?'instapay':'cash',
+        receiptUrl, attendance: null, notes: null,
+        source: 'public',
+        customerUid: _currentUser?.uid || null,
+        createdAt: new Date().toISOString()
+      };
+      const batch = db.batch();
+      batch.set(db.collection('bookings').doc(booking.id), booking);
+      batch.set(db.collection('public_bookings').doc(booking.id), {
+        sourceBookingId: booking.id,
+        courtId: booking.courtId,
+        date: booking.date,
+        startTime: booking.startTime,
+        endTime: booking.endTime,
+        duration: booking.duration,
+        status: booking.status,
+        customerUid: booking.customerUid || null,
+        updatedAt: new Date().toISOString()
+      });
+      await batch.commit();
+      if (!confirmData) confirmData = booking;
+    }
+    // Send email notification ONCE after all bookings are saved
+    try {
+      const adminEmail = _settings.notifyEmail || _settings.contactEmail || 'admin@example.com';
+      const bk = confirmData;
+      await emailjs.send('service_e7np3qn','template_g0h5o5g',{
+        to_email: adminEmail, email: adminEmail,
+        to_name: _settings.clubName || window.cbTx('مدير النادي', 'Club manager'), user_email: adminEmail,
+        booking_id: bk.id, customer_name: bk.customerName,
+        phone: bk.phone, court_name: bk.courtName,
+        date: bk.date, start_time: bk.startTime,
+        end_time: bk.endTime, duration: bk.duration, price: bk.price
+      },'AbhgvKJWTG3qcX5Cy');
+      console.log('Email sent successfully to', adminEmail);
+    } catch(e) { console.error('Email send failed:', e); }
+    // Confirmation page
+    const d = new Date(confirmData.date);
+    const ds = window.cbFormatDate
+      ? window.cbFormatDate(d,{weekday:'long',year:'numeric',month:'short',day:'numeric'})
+      : d.toLocaleDateString(undefined,{weekday:'long',year:'numeric',month:'short',day:'numeric'});
+    document.getElementById('confirm-details').innerHTML = `
+      <div class="flex justify-between py-3 border-b border-black/5 dark:border-white/5"><span class="text-sm text-outline">${tx('الملعب', 'Court')}</span><span class="text-sm font-bold">${esc(displayCourtName(confirmData.courtName))}</span></div>
+      <div class="flex justify-between py-3 border-b border-black/5 dark:border-white/5"><span class="text-sm text-outline">${tx('التاريخ', 'Date')}</span><span class="text-sm font-bold">${ds}</span></div>
+      <div class="flex justify-between py-3 border-b border-black/5 dark:border-white/5"><span class="text-sm text-outline">${tx('الوقت', 'Time')}</span><span class="text-sm font-bold">${confirmData.startTime} – ${confirmData.endTime}</span></div>
+      <div class="flex justify-between py-3 border-b border-black/5 dark:border-white/5"><span class="text-sm text-outline">${tx('رقم الحجز', 'Booking number')}</span><span class="text-sm font-black text-primary">${esc(getBookingRef(confirmData))}</span></div>
+      <div class="flex justify-between py-3 border-b border-black/5 dark:border-white/5"><span class="text-sm text-outline">${tx('المبلغ', 'Amount')}</span><span class="text-sm font-black text-primary">${formatCurrency(totalPrice)}</span></div>
+      <div class="flex justify-between py-3 border-b border-black/5 dark:border-white/5"><span class="text-sm text-outline">${tx('طريقة الدفع', 'Payment method')}</span><span class="text-sm font-bold">${_payMethod==='instapay' ? '📱 InstaPay' : `🏟️ ${tx('الدفع عند الوصول', 'Pay at the club')}`}</span></div>
+      <div class="flex justify-between py-3 border-b border-black/5 dark:border-white/5"><span class="text-sm text-outline">${tx('الحالة', 'Status')}</span><span class="text-sm font-bold text-amber">⏳ ${tx('في انتظار التأكيد', 'Awaiting confirmation')}</span></div>
+      <a href="https://maps.app.goo.gl/XwojpUgDuVeTde3L8" target="_blank"
+        class="flex items-center justify-between py-3 text-primary hover:text-primary-dark transition-colors group">
+        <span class="text-sm text-outline">${tx('موقع النادي', 'Club location')}</span>
+        <span class="flex items-center gap-1.5 text-sm font-bold group-hover:underline">
+          <span class="material-symbols-outlined text-base">map</span>
+          ${tx('افتح في خرائط Google', 'Open in Google Maps')}
+        </span>
+      </a>`;
+    window.cbTranslateCustomerStatic?.(document.getElementById('confirm-details'));
+    document.getElementById('share-wa-btn').onclick = () => {
+      const text = [
+        window.cbTx('مرحباً، تم الدفع للحجز التالي:', 'Hello, the following booking has been paid:'),
+        `${window.cbTx('رقم الحجز', 'Booking number')}: ${getBookingRef(confirmData)}`,
+        `${window.cbTx('الاسم', 'Name')}: ${confirmData.customerName}`,
+        `${window.cbTx('الملعب', 'Court')}: ${displayCourtName(confirmData.courtName)}`,
+        `${window.cbTx('التاريخ', 'Date')}: ${confirmData.date}`,
+        `${window.cbTx('الوقت', 'Time')}: ${confirmData.startTime} - ${confirmData.endTime}`,
+        `${window.cbTx('المدة', 'Duration')}: ${confirmData.duration} ${window.cbTx('ساعة', 'hr')}`,
+        `${window.cbTx('الإجمالي', 'Total')}: ${formatCurrency(totalPrice)}`,
+        `${window.cbTx('طريقة الدفع', 'Payment method')}: ${_payMethod==='instapay'?'InstaPay':window.cbTx('الدفع عند الوصول', 'Pay at the club')}`
+      ].join('\n');
+      window.open('https://wa.me/' + PAYMENT_NOTIFY_NUMBER + '?text=' + encodeURIComponent(text));
+    };
+    goStep(3);
+    showToast(window.cbTx('تم إرسال طلب الحجز بنجاح ✓', 'Booking request sent successfully ✓'));
+  } catch(e) {
+    console.error('Booking error:', e);
+    showToast(window.cbTx('حدث خطأ — حاول مرة أخرى', 'Something went wrong — please try again'),'error');
+  }
+  [btn, btnM].forEach(b => { if(b){b.disabled=false;b.textContent=window.cbTx('إرسال طلب الحجز', 'Submit booking request')} });
+}
+// ─── Events ───
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('logout-btn').addEventListener('click', () => {
+    sessionStorage.setItem(CUSTOMER_LOGOUT_FLAG, '1');
+    if (_publicBookingsUnsub) { _publicBookingsUnsub(); _publicBookingsUnsub = null; }
+    if (_courtBlocksUnsub) { _courtBlocksUnsub(); _courtBlocksUnsub = null; }
+    if (_drinksUnsub) { _drinksUnsub(); _drinksUnsub = null; }
+    auth.signOut()
+      .then(() => window.location.href = 'index.html')
+      .catch(() => window.location.href = 'index.html');
+  });
+  document.getElementById('week-strip').addEventListener('click', e => {
+    const day = e.target.closest('.bk-week-day');
+    if (!day) return;
+    _dayOff = parseInt(day.dataset.off);
+    const d = new Date(); d.setDate(d.getDate()+_dayOff);
+    _date = d.toISOString().slice(0,10);
+    _selectedSlots.clear(); _court = null;
+    renderGrid();
+  });
+  document.getElementById('next-day-btn').addEventListener('click', () => {
+    if (_dayOff < 6) { _dayOff++; const d = new Date(); d.setDate(d.getDate()+_dayOff); _date = d.toISOString().slice(0,10); _selectedSlots.clear(); _court = null; renderGrid(); }
+  });
+  document.getElementById('mobile-courts-list').addEventListener('click', e => {
+    const pill = e.target.closest('[data-court-pill]');
+    if (!pill) return;
+    const courtId = pill.dataset.courtPill;
+    if (_mobileCourt !== courtId) _selectedSlots.clear();
+    _mobileCourt = courtId;
+    _court = courtId;
+    _skipScroll = true;
+    renderGrid();
+  });
+  document.getElementById('slots-grid').addEventListener('click', e => {
+    const s = e.target.closest('[data-c]');
+    if (!s || s.classList.contains('past') || s.classList.contains('booked') || s.classList.contains('blocked')) return;
+    const cId = s.dataset.c, time = s.dataset.t;
+    if (_court && _court !== cId) _selectedSlots.clear();
+    _court = cId; _date = s.dataset.d;
+    if (_selectedSlots.has(time)) { _selectedSlots.delete(time); if (_selectedSlots.size===0) _court=null; }
+    else _selectedSlots.add(time);
+    _skipScroll = true; renderGrid();
+  });
+  document.getElementById('next-btn').addEventListener('click', () => goStep(2));
+  document.getElementById('back-btn').addEventListener('click', () => goStep(1));
+  document.querySelectorAll('.pay-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      document.querySelectorAll('.pay-pill').forEach(p=>p.classList.remove('active'));
+      pill.classList.add('active'); _payMethod = pill.dataset.method;
+      document.getElementById('instapay-group').classList.toggle('hidden', _payMethod !== 'instapay');
+    });
+  });
+  document.getElementById('copy-instapay-btn').addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(INSTAPAY_URL);
+      showToast(window.cbTx('تم نسخ رابط الدفع ✓', 'Payment link copied ✓'));
+    } catch (e) {
+      window.prompt(window.cbTx('انسخ رابط الدفع:', 'Copy the payment link:'), INSTAPAY_URL);
+    }
+  });
+  document.getElementById('submit-btn').addEventListener('click', e => { e.preventDefault(); submitBooking(); });
+  document.getElementById('submit-btn-mobile').addEventListener('click', e => { e.preventDefault(); submitBooking(); });
+  document.getElementById('book-again-btn').addEventListener('click', () => {
+    _court=null; _date=null; _dayOff=0; _selectedSlots.clear(); _payMethod='club'; _selectedDrinks={}; _mobileCourt = _courts[0]?.id || null;
+    document.getElementById('instapay-group').classList.add('hidden');
+    document.querySelectorAll('.pay-pill').forEach(p=>p.classList.remove('active'));
+    document.querySelector('[data-method="club"]').classList.add('active');
+    goStep(1); renderGrid();
+  });
+  window.addEventListener('resize', () => {
+    if (_currentStep === 1) renderGrid();
+  });
+});
+window.addEventListener('beforeunload', () => {
+  if (_publicBookingsUnsub) { _publicBookingsUnsub(); _publicBookingsUnsub = null; }
+  if (_courtBlocksUnsub) { _courtBlocksUnsub(); _courtBlocksUnsub = null; }
+  if (_drinksUnsub) { _drinksUnsub(); _drinksUnsub = null; }
+});
+</script>
+</body>
+</html>

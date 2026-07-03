@@ -1,0 +1,7 @@
+.DS_Store
+*.log
+node_modules/
+.env
+.env.*
+# never commit a real firebase config
+firebase-config.local.js

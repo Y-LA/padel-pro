@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>باديل برو — تسجيل الدخول</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #1eb07d;
+      --primary-hover: #179166;
+      --bg-dark: #0a1118;
+      --text-main: #1a1a1a;
+      --text-muted: #717171;
+      --border: #e2e8f0;
+      --shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Tajawal', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-dark) url('bg.png') no-repeat center center / cover;
+      overflow-x: hidden;
+      position: relative;
+      padding: 24px 16px;
+    }
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 1;
+    }
+    .login-card {
+      position: relative;
+      z-index: 2;
+      background: #fff;
+      width: 100%;
+      max-width: 440px;
+      padding: 48px 40px;
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+    .lang-toggle {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text-main);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    html[dir="ltr"] .lang-toggle {
+      right: auto;
+      left: 16px;
+    }
+    .login-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      color: #fff;
+    }
+    .login-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 8px;
+    }
+    .login-subtitle {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+    }
+    .form-group {
+      text-align: right;
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--text-main);
+    }
+    .form-control {
+      width: 100%;
+      height: 48px;
+      padding: 0 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+    }
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(30, 176, 125, 0.1);
+    }
+    .btn-primary {
+      width: 100%;
+      height: 48px;
+      background: var(--primary);
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 12px;
+      font-family: inherit;
+    }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; }
+    /* Toast styles */
+    .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; }
+    .toast {
+      background: #fff;
+      padding: 12px 20px;
+      border-radius: 12px;
+      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.9rem;
+      border-right: 4px solid var(--primary);
+      animation: slideIn 0.3s ease-out;
+    }
+    @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    @media (max-width: 640px) {
+      body {
+        align-items: stretch;
+        padding: 16px 12px;
+      }
+      .login-card {
+        margin: auto 0;
+        max-width: 100%;
+        padding: 32px 20px;
+        border-radius: 18px;
+      }
+      .login-title { font-size: 1.3rem; }
+      .login-subtitle { margin-bottom: 24px; }
+      .toast-container {
+        right: 12px;
+        left: 12px;
+        bottom: 12px;
+      }
+      .toast {
+        width: 100%;
+        margin-bottom: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-card">
+    <button type="button" id="lang-toggle-btn" class="lang-toggle">English</button>
+    <div class="login-icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M12 2a10 10 0 0 1 0 20M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+      </svg>
+    </div>
+    <h1 class="login-title">تسجيل الدخول</h1>
+    <p class="login-subtitle">أهلاً بك في نظام إدارة باديل برو</p>
+    <form id="login-form">
+      <div class="form-group">
+        <label for="email">البريد الإلكتروني</label>
+        <input type="email" id="email" class="form-control" placeholder="admin@padelpro.eg" required>
+      </div>
+      <div class="form-group">
+        <label for="password">كلمة المرور</label>
+        <input type="password" id="password" class="form-control" placeholder="••••••••" required>
+      </div>
+      <button type="submit" class="btn-primary">دخول</button>
+    </form>
+  </div>
+  <div id="toast-container" class="toast-container"></div>
+  <!-- Firebase SDKs (v8 compat) -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="firebase-config.js?v=8"></script>
+  <script>
+    const LOGIN_I18N = {
+      ar: {
+        title: 'باديل برو — تسجيل الدخول',
+        heading: 'تسجيل الدخول',
+        subtitle: 'أهلاً بك في نظام إدارة باديل برو',
+        email: 'البريد الإلكتروني',
+        password: 'كلمة المرور',
+        button: 'دخول',
+        checking: 'جاري التحقق...',
+        blocked: 'ليس لديك صلاحية الوصول للوحة التحكم',
+        noAccess: 'عذراً، هذا الحساب ليس لديه صلاحية دخول الإدارة',
+        invalid: 'بيانات غير صحيحة',
+        failed: 'فشل تسجيل الدخول',
+        toggle: 'English'
+      },
+      en: {
+        title: 'Padel Pro — Sign in',
+        heading: 'Sign in',
+        subtitle: 'Welcome to Padel Pro management system',
+        email: 'Email',
+        password: 'Password',
+        button: 'Sign in',
+        checking: 'Checking...',
+        blocked: 'You do not have access to the dashboard',
+        noAccess: 'Sorry, this account does not have admin access',
+        invalid: 'Invalid credentials',
+        failed: 'Login failed',
+        toggle: 'العربية'
+      }
+    };
+    const LOGIN_LANG_KEY = 'padelPro_language';
+    let loginLang = localStorage.getItem(LOGIN_LANG_KEY) === 'en' ? 'en' : 'ar';
+    function applyLoginLanguage() {
+      const pack = LOGIN_I18N[loginLang];
+      const dir = loginLang === 'ar' ? 'rtl' : 'ltr';
+      document.documentElement.lang = loginLang;
+      document.documentElement.dir = dir;
+      document.title = pack.title;
+      document.querySelector('.login-title').textContent = pack.heading;
+      document.querySelector('.login-subtitle').textContent = pack.subtitle;
+      document.querySelector('label[for="email"]').textContent = pack.email;
+      document.querySelector('label[for="password"]').textContent = pack.password;
+      document.querySelector('#login-form button').textContent = pack.button;
+      document.querySelector('#lang-toggle-btn').textContent = pack.toggle;
+      document.querySelectorAll('.form-group').forEach(el => {
+        el.style.textAlign = dir === 'rtl' ? 'right' : 'left';
+      });
+    }
+    // Simple Toast implementation for login page
+    const AppToast = {
+      show(msg, type) {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.textContent = msg;
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+      }
+    };
+    window.AppToast = AppToast;
+    document.getElementById('lang-toggle-btn').addEventListener('click', () => {
+      loginLang = loginLang === 'ar' ? 'en' : 'ar';
+      localStorage.setItem(LOGIN_LANG_KEY, loginLang);
+      applyLoginLanguage();
+    });
+    applyLoginLanguage();
+    // Show blocked message if redirected from dashboard
+    if (new URLSearchParams(window.location.search).get('blocked')) {
+      AppToast.show(LOGIN_I18N[loginLang].blocked, 'error');
+    }
+    document.getElementById('login-form').addEventListener('submit', async e => {
+        e.preventDefault();
+        const email = document.getElementById('email').value.trim();
+        const pass  = document.getElementById('password').value.trim();
+        const btn   = e.target.querySelector('button');
+        btn.disabled = true;
+        btn.textContent = LOGIN_I18N[loginLang].checking;
+        try {
+          await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION);
+          const res = await firebase.auth().signInWithEmailAndPassword(email, pass);
+          const user = res.user;
+          // ── Security Check BEFORE redirect ──
+          let isStaff = false;
+          const HARDCODED_ADMINS = ['admin@example.com'];
+          if (HARDCODED_ADMINS.includes(user.email?.toLowerCase())) {
+            isStaff = true;
+          } else {
+            // Check Firestore staff_index
+            const db = firebase.firestore();
+            const idxDoc = await db.collection('staff_index').doc('list').get();
+            if (idxDoc.exists) {
+              const emails = (idxDoc.data().emails || []).map(e => e.toLowerCase());
+              isStaff = emails.includes(user.email?.toLowerCase());
+            }
+          }
+          if (isStaff) {
+            window.location.href = 'dashboard.html';
+          } else {
+            await firebase.auth().signOut();
+            AppToast.show(LOGIN_I18N[loginLang].noAccess, 'error');
+            btn.disabled = false;
+            btn.textContent = LOGIN_I18N[loginLang].button;
+          }
+        } catch (err) {
+          console.error('Login error:', err);
+          const errorMsg = err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found'
+            ? LOGIN_I18N[loginLang].invalid
+            : LOGIN_I18N[loginLang].failed;
+          AppToast.show(errorMsg, 'error');
+          btn.disabled = false;
+          btn.textContent = LOGIN_I18N[loginLang].button;
+        }
+      });
+  </script>
+</body>
+</html>
