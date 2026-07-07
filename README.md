@@ -1,6 +1,8 @@
 # 🎾 Padel Pro — Court Booking Platform
 
-A full, production-ready **bilingual (Arabic/English) booking platform for padel courts**, built with a lightweight serverless architecture: a fast static frontend powered entirely by **Firebase** (Auth, Firestore, Storage) — no backend server to maintain, near-zero hosting cost.
+A full bilingual Arabic/English booking platform for padel courts, built as a practical portfolio project using a lightweight serverless architecture powered by **Firebase Auth, Firestore, and Storage**.
+
+The platform replaces manual WhatsApp, phone-call, and paper-based reservations with a structured digital workflow for customers and club admins.
 
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)
@@ -32,40 +34,65 @@ A full, production-ready **bilingual (Arabic/English) booking platform for padel
 |---|---|---|
 | ![Customers](docs/screenshots/admin-customers.png) | ![Courts](docs/screenshots/admin-courts.png) | ![Reports](docs/screenshots/admin-reports.png) |
 
+---
+
 ## 💡 The Idea
 
-Padel is one of the fastest-growing sports in Egypt and the Middle East, but most courts are still booked the old way: phone calls, WhatsApp messages, and paper notebooks. This leads to double bookings, no-shows, lost payment records, and zero visibility for the owner into how the business is performing.
+Padel is one of the fastest-growing sports in Egypt and the Middle East, but many courts are still booked manually through phone calls, WhatsApp messages, and paper notebooks.
 
-**Padel Pro** digitizes the entire operation end-to-end:
+This creates common operational problems:
 
-- **Players** see real-time court availability, book a slot in a 3-step wizard, add extras (drinks/services), pay on arrival or via InstaPay (QR + payment link + receipt upload), and manage all their bookings from one place — with printable invoices.
-- **Owners/Admins** get a secure control panel to confirm or reject bookings, review payment receipts, manage courts and pricing, block time slots for maintenance, and track revenue and occupancy.
+- Double bookings
+- Missed or forgotten reservations
+- No-shows
+- Lost payment records
+- Manual admin workload
+- Limited visibility into revenue and court occupancy
+
+**Padel Pro** digitizes the booking workflow end to end for both players and club owners.
+
+- **Players** can view court availability, book a slot through a simple 3-step flow, add extras, choose payment method, upload receipts, and manage their bookings.
+- **Owners/Admins** can manage bookings, courts, customers, payments, reports, blocked slots, and daily operations through a dedicated admin dashboard.
+
+---
+
 
 ## 🎯 Goals
 
-1. Eliminate double bookings with a single real-time source of truth for availability.
-2. Cut the admin's daily workload — no more manual notebook tracking.
-3. Give customers a modern self-service experience in their own language (full Arabic RTL support).
-4. Keep running costs near zero using a serverless stack — ideal for small sports businesses.
+1. Eliminate double bookings with a real-time availability system.
+2. Reduce manual admin work and paper-based tracking.
+3. Provide customers with a modern self-service booking experience.
+4. Support Arabic and English users with full RTL/LTR interface switching.
+5. Keep hosting and maintenance overhead low using a serverless Firebase stack.
+
+---
 
 ## ✨ Features
 
 ### Customer side
-- 🌍 **Full Arabic/English localization** with proper RTL/LTR switching and dark mode.
-- 📱 **Phone-based accounts** — players register with their phone number (synthesized into Firebase email auth under the hood).
-- 🗓️ **3-step booking wizard**: pick court & time → enter details & extras → choose payment.
-- ⚡ **Real-time availability** — slots update live from Firestore; blocked/maintenance slots are excluded automatically.
-- ☕ **Add-on services** — drinks and extras can be attached to a booking.
-- 💳 **Two payment flows**: pay on arrival, or InstaPay with QR code, direct payment link, and receipt image upload for verification.
-- 🧾 **My Bookings** page with booking reference numbers and a printable booking invoice.
+
+- 🌍 **Arabic/English localization** with proper RTL/LTR switching.
+- 🌙 **Dark mode support** for a modern user experience.
+- 📱 **Phone-based account flow** using Firebase authentication.
+- 🗓️ **3-step booking wizard**: choose court & time → enter details & extras → choose payment.
+- ⚡ **Real-time availability** powered by Firestore.
+- 🚫 **Blocked slots handling** for maintenance or private events.
+- ☕ **Add-on services** such as drinks or extras attached to bookings.
+- 💳 **Payment options**: pay on arrival or InstaPay with QR/payment link.
+- 📤 **Receipt upload** for payment verification.
+- 🧾 **My Bookings** page with booking references and printable invoices.
 
 ### Admin side
-- 🔐 **Secure admin login** (Firebase Auth) with role verification — non-admin accounts are rejected.
-- 📊 **Dashboard** with live stats: bookings, revenue, occupancy, and status breakdown.
-- ✅ **Booking management** — confirm / cancel, filter by status, court, and date; review uploaded InstaPay receipts before confirming.
-- 🏟️ **Courts management** — add/edit courts, set pricing, open hours, and block slots (maintenance / private events).
-- ⚙️ **Settings** stored centrally in Firestore (contact info, notifications, payment details).
-- 👥 **Customers & debts** *(latest production version)* — customer directory with booking history, total spend, and outstanding-balance tracking. The deployed version shown in the screenshots includes these newer modules; this repo contains the stable core snapshot.
+
+- 🔐 **Secure admin login** using Firebase Auth with role verification.
+- 📊 **Dashboard overview** with live stats for bookings, revenue, occupancy, and booking statuses.
+- ✅ **Booking management**: confirm, cancel, filter, and review payment receipts.
+- 🏟️ **Court management**: add/edit courts, pricing, opening hours, and blocked slots.
+- ⚙️ **Central settings** stored in Firestore for contact info, payment details, and configuration.
+- 👥 **Customers & debts**: customer directory with booking history, total spend, and outstanding-balance tracking.
+- 📈 **Reports section** for tracking business performance and operational activity.
+
+---
 
 ## 🏗️ Architecture
 
@@ -185,20 +212,29 @@ padel-pro/
     └── style.css          # Admin panel styles
 ```
 
-## 🛣️ Roadmap
+🛣️ Roadmap
+Online payment gateway — automatic payment confirmation via Paymob, Fawry, or Stripe.
+Notifications — WhatsApp Business API or FCM push notifications for confirmations and reminders.
+Multi-venue support — one deployment serving multiple clubs.
+Framework migration — rebuild using React + TypeScript with Firebase v10 modular SDK.
+Smart scheduling — peak/off-peak pricing and occupancy predictions.
+Loyalty & memberships — points, subscriptions, recurring bookings, and customer plans.
+Native mobile app — React Native or Flutter app connected to the same Firestore backend.
+Testing & CI — E2E tests with Playwright and GitHub Actions.
+🧠 What This Project Demonstrates
 
-- **Online payment gateway** — automatic payment confirmation via Paymob / Fawry / Stripe instead of manual receipt review.
-- **Notifications** — WhatsApp Business API / FCM push for booking confirmations and reminders.
-- **Multi-venue support** — one deployment serving multiple clubs, each with its own courts, staff, and branding.
-- **Framework migration** — port the frontend to React + TypeScript with the Firebase v10 modular SDK (an admin dashboard prototype already exists).
-- **Smart scheduling** — dynamic (peak/off-peak) pricing and occupancy predictions.
-- **Loyalty & memberships** — points, subscriptions, and recurring bookings.
-- **Native mobile app** — React Native / Flutter client on the same Firestore backend.
-- **Testing & CI** — E2E tests with Playwright and GitHub Actions.
+This project demonstrates building a real business-oriented web application end to end:
 
-## 🧠 What this project demonstrates
-
-Building a real product end-to-end: requirements from a real business domain, data modeling for privacy (public availability mirror vs. private bookings), authentication flows with role-based access, real-time UI on Firestore listeners, bilingual RTL/LTR UX, file uploads, and a payments flow designed around local payment habits (InstaPay + cash) — all delivered with zero backend infrastructure.
+Translating a real business workflow into a digital system
+Designing booking flows and admin operations
+Using Firebase as a serverless backend
+Implementing authentication and role-based access
+Structuring Firestore collections for real-time availability
+Handling file uploads for payment receipts
+Supporting bilingual Arabic/English interfaces
+Building RTL/LTR user experiences
+Creating dashboards for bookings, customers, payments, and reports
+Thinking about privacy through public/private booking data separation
 
 ## 📄 License
 
@@ -206,4 +242,4 @@ Published for demonstration and portfolio purposes — see [LICENSE](LICENSE).
 
 ---
 
-**Yousef Lawah** — [yousef.lawah@gmail.com](mailto:yousef.lawah@gmail.com)
+**Yousef Ellawah** — [yousef.lawah@gmail.com](mailto:yousef.lawah@gmail.com)
